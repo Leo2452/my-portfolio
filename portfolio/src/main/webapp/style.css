@@ -9,9 +9,8 @@ body {
 }
 
 #footer {
-    position: fixed;
+    position: absolute;
     left:0;
-    bottom:0;
     width:100%;
     height: 75px;
     background-color: #3477eb;
@@ -31,4 +30,12 @@ a:link {
 
 #greeting-container {
   margin-top: 20px;
+}
+
+#content img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: auto;
 }
