@@ -8,6 +8,10 @@ body {
   width: 650px;
 }
 
+#content-wrap {
+    padding-bottom: 75px;
+}
+
 #footer {
     position: fixed;
     left:0;
