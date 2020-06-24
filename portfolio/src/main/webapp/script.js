@@ -44,3 +44,13 @@ function addRandomGreeting() {
      const factContainer = document.getElementById('fact-container');
      factContainer.innerText = chosen;
  }
+
+/**
+ * Makes sure user wants to return to previous page.
+ */
+function prevPage() {
+    let returning = confirm('Returning to previous page');
+    if(returning) {
+        window.location = '/'
+    }
+}
