@@ -57,19 +57,20 @@ function prevPage() {
 
 /**
  * Prompts user with questionnaire to test whether they are
- * humans or not.
+ * humans or not. 
  */
  function questions() {
+     //Provide message along with prompt and question
     alert("To access this page, you need to answer a simple question. \
-            You will be given a basic prompt and must provide an answer.");
+            You will be given a basic prompt and must provide an answer \
+            to determine if you are a human.");
     let ans = prompt("Hawks often hunt for small mammals like rabbits. \
-     	                    Who is the prey in this relationship?")
+     	                    Who is the prey in this relationship?");
 
     //Redirect user to appropriate webpage
-    if(ans.toLowerCase() !== ("rabbits" || "rabbit")) {
-        window.location.href("/denied.html")
+    if(ans.toLowerCase() === "rabbits" || ans.toLowerCase() === "rabbit") {
+        window.location.assign("/homepage.html");
     } else {
-        window.location.href("/homepage.html")
+        window.location.assign("/denied.html");
     }
-
  }
