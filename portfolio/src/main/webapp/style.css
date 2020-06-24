@@ -56,3 +56,10 @@ a:link {
     width: 60%;
     height: auto;
 }
+
+#unauthorized {
+    margin-left: 25%;
+    margin-right: 75%;
+    width: 100%;
+}
+
