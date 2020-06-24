@@ -54,3 +54,22 @@ function prevPage() {
         window.location = '/'
     }
 }
+
+/**
+ * Prompts user with questionnaire to test whether they are
+ * humans or not.
+ */
+ function questions() {
+    alert("To access this page, you need to answer a simple question. \
+            You will be given a basic prompt and must provide an answer.");
+    let ans = prompt("Hawks often hunt for small mammals like rabbits. \
+     	                    Who is the prey in this relationship?")
+
+    //Redirect user to appropriate webpage
+    if(ans.toLowerCase() !== ("rabbits" || "rabbit")) {
+        window.location.href("/denied.html")
+    } else {
+        window.location.href("/homepage.html")
+    }
+
+ }
