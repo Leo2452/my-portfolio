@@ -58,8 +58,10 @@ a:link {
 }
 
 #unauthorized {
-    margin-left: 25%;
-    margin-right: 75%;
-    width: 100%;
+    padding-top: 3%;
+    text-align: center;
 }
 
+#unauthorized h1 {
+  font-size: 300%;
+}
