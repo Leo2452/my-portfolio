@@ -74,3 +74,10 @@ function prevPage() {
         window.location = '/'
     }
 }
+
+ /**
+  * Redirect the user to the index page to determine authorization
+  */
+  function redirect() {
+      window.location.assign("/index.html");
+  }
