@@ -51,11 +51,11 @@ function addRandomGreeting() {
  */
  function questions() {
      //Provide message along with prompt and question
-    alert("To access this page, you need to answer a simple question. \
-            You will be given a basic prompt and must provide an answer \
-            to determine if you are a human.");
-    let ans = prompt("Hawks often hunt for small mammals like rabbits. \
-     	                    Who is the prey in this relationship?");
+    alert("To access this page, you need to answer a simple question.\n" +
+            "You will be given a basic prompt and must provide an answer " +
+            "to determine if you are a human.");
+    let ans = prompt("Hawks often hunt for small mammals like rabbits.\n" +
+     	                "Who is the prey in this relationship?");
 
     //Redirect user to appropriate webpage
     if(ans.toLowerCase() === "rabbits" || ans.toLowerCase() === "rabbit") {
