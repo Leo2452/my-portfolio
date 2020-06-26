@@ -1,9 +1,67 @@
+body {
+    background-color: #cccac9;
+}
+
 #content {
   margin-left: auto;
   margin-right: auto;
   width: 650px;
 }
 
+#content img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: auto;
+}
+
 #greeting-container {
   margin-top: 20px;
+}
+
+#fact-container {
+    margin-top: 20px;
+}
+
+#content-wrap {
+    padding-bottom: 75px;
+}
+
+#footer {
+    position: absolute;
+    left:0;
+    width:100%;
+    height: 75px;
+    background-color: #3477eb;
+    color: white;
+    text-align: center;
+    line-height: 0.75;
+}
+
+a:link {
+    color: white;
+    background-color: transparent;
+} 
+
+#column {
+    float: left;
+    width: 50%;
+}
+
+#column img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    height: auto;
+}
+
+#unauthorized {
+    padding-top: 3%;
+    text-align: center;
+}
+
+#unauthorized h1 {
+    font-size: 300%;
 }
