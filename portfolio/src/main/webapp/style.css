@@ -56,3 +56,12 @@ a:link {
     width: 60%;
     height: auto;
 }
+
+#unauthorized {
+    padding-top: 3%;
+    text-align: center;
+}
+
+#unauthorized h1 {
+    font-size: 300%;
+}
