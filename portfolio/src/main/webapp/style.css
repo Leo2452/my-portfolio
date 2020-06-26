@@ -44,3 +44,15 @@ a:link {
     background-color: transparent;
 } 
 
+#column {
+    float: left;
+    width: 50%;
+}
+
+#column img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    height: auto;
+}
