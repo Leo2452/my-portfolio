@@ -12,6 +12,10 @@ body {
   margin-top: 20px;
 }
 
+#fact-container {
+    margin-top: 20px;
+}
+
 #content-wrap {
     padding-bottom: 75px;
 }
