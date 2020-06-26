@@ -26,3 +26,13 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Makes sure user wants to return to previous page.
+ */
+function prevPage() {
+    let returning = confirm('Returning to previous page');
+    if(returning) {
+        window.location = '/'
+    }
+}
