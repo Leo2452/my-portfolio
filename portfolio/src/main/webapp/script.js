@@ -26,3 +26,22 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Adds a random fact to the page
+ */
+ function addRandomFact() {
+     const facts = 
+     ['I am currently trying to become fluent with my left hand!', 
+     'The longest I\'ve been awake for is ~30 hours - \
+     I do NOT recommend! Get sleep :)', 'I love to jump rope!', 
+     'I like riding bikes', 'I love (most) seafood, from shrimp to oysters!'];
+
+     //Pick a random fact
+     const chosen = facts[Math.floor(Math.random() * facts.length)];
+
+     //Add it to the page
+     const factContainer = document.getElementById('fact-container');
+     factContainer.innerText = chosen;
+ }
+ 
