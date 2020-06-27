@@ -28,6 +28,17 @@ function addRandomGreeting() {
 }
 
 /**
+ * Prompt client for their name and give them a special greeting.
+ */
+function addSpecialGreeting() {
+    var client = prompt("What is your name?");
+    fetch('/data').then(response => response.text()).then(greeting => {
+        document.getElementById('special-greeting-container') = 
+        greeting + client + "! Welcome to my page :)";
+    })
+}
+
+/**
  * Adds a random fact to the page
  */
 function addRandomFact() {
