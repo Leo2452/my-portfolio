@@ -33,8 +33,8 @@ function addRandomGreeting() {
 function addSpecialGreeting() {
     var client = prompt("What is your name?");
     fetch('/data').then(response => response.text()).then(greeting => {
-        document.getElementById('special-greeting-container') = 
-        greeting + client + "! Welcome to my page :)";
+        document.getElementById('special-greeting-container').innerText = 
+        greeting + client + ", Welcome to my page :)";
     })
 }
 
