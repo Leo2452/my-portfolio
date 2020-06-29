@@ -31,10 +31,10 @@ function addRandomGreeting() {
  * Prompt client for their name and give them a special greeting.
  */
 function addSpecialGreeting() {
-    var client = prompt("What is your name?");
-    fetch('/data').then(response => response.text()).then(greeting => {
-        document.getElementById('special-greeting-container').innerText = 
-        greeting + client + ", Welcome to my page :)";
+    //var client = prompt("What is your name?");
+    fetch('/data').then(response => response.json()).then(greeting => {
+        var box = document.getElementById('special-greeting-container');
+        box.innerText = greeting;
     })
 }
 
