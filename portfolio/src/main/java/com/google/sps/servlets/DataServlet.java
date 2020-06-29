@@ -27,28 +27,26 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-	private List<String> greetings;
+	private List<String> comments = new ArrayList<>();
 
-	@Override
-	public void init() {
-		greetings = new ArrayList<>();
-		greetings.add("Hi");
-		greetings.add("Hello");
-		greetings.add("Hey");
-		greetings.add("Bonjour");
-		greetings.add("Hola");
-	}
-
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	String greeting = convertToGson(greetings);
-    
-    response.setContentType("application/json;");
-    response.getWriter().println(greeting);
-  }
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	    String json = convertToGson(comments);
+        response.setContentType("application/json;");
+        response.getWriter().println(json);
+    }
   
-  /*Converts an arrayList instance into a JSON string with Gson library.*/
-  private String convertToGson(List<String> greetings) {
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String text = request.getParameter("input");
+        comments.add(text);
+
+        //Redirect user to the homepage
+        response.sendRedirect("/homepage.html");
+    }
+
+    /*Converts an arrayList instance into a JSON string with Gson library.*/
+    private String convertToGson(List<String> greetings) {
       Gson conversion = new Gson();
       String result = conversion.toJson(greetings);
       return result;

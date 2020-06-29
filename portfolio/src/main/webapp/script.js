@@ -92,3 +92,22 @@ function prevPage() {
   function redirect() {
       window.location.assign("/index.html");
   }
+
+/**
+ * Fetches the comments on webpage and displays a history of them.
+ */
+function getComments() {
+    fetch('/data').then(response => response.json()).then(comments =>{
+        const history = document.getElementById('comment-history')
+        comments.forEach(line => {
+            history.appendChild(createListElement(line));
+        })
+    })
+}
+
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
+}
