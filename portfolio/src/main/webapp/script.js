@@ -37,6 +37,13 @@ function prevPage() {
     }
 }
 
+ /**
+  * Redirect the user to the index page to determine authorization
+  */
+  function redirect() {
+      window.location.assign("/index.html");
+  }
+
 /**
  * Adds a random fact to the page
  */
