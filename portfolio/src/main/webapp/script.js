@@ -97,12 +97,32 @@ function prevPage() {
  * Fetches the comments on webpage and displays a history of them.
  */
 function getComments() {
+    //Set a default value of comments to display
+    var numComments = document.getElementById("num-comments").value;
+    if (numComments == 0) {
+        document.getElementById("num-comments").value = 3;
+        numComments = 3;
+    }
+
+    //Display the comment history according to user preference
     fetch('/data').then(response => response.json()).then(comments =>{
-        const history = document.getElementById('comment-history')
-        comments.forEach(line => {
-            history.appendChild(createListElement(line));
-        })
+        const history = document.getElementById("comment-history");
+        for (i = 0; i < numComments; i++) {
+            if (comments.length > i) {
+               history.appendChild(createListElement(comments[i]));
+            }
+        }
     })
+}
+
+/**
+ * Empties the current comment history and reloads it with a new 
+ * number of comments to load from num-comments textbox
+ */
+function updateComments() {
+    document.getElementById("comment-history").innerText = "";
+    document.getElementById
+    getComments();
 }
 
 /** Creates an <li> element containing text. */

@@ -17,7 +17,8 @@
       <div id="special-greeting-container"></div>
 	  <form action="/data" method="POST">
 	    <ul id="comment-history"></ul>
-		<textarea name="input"></textarea>
+		<textarea name="input" placeholder="Leave a comment"></textarea>
+        <input type="number" name="num-comments" id="num-comments" min="1" max="5" onchange="updateComments()">
 		<input type="submit">
 	  </form>
       <p>My full name is Leobardo but I usually go by Leo. I'm 20 years old
