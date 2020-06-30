@@ -28,9 +28,19 @@ function addRandomGreeting() {
 }
 
 /**
+ * Makes sure user wants to return to previous page.
+ */
+function prevPage() {
+    let returning = confirm('Returning to previous page');
+    if(returning) {
+        window.location = '/'
+    }
+}
+
+/**
  * Adds a random fact to the page
  */
- function addRandomFact() {
+function addRandomFact() {
      const facts = 
      ['I am currently trying to become fluent with my left hand!', 
      'The longest I\'ve been awake for is ~30 hours - \
@@ -43,13 +53,13 @@ function addRandomGreeting() {
      //Add it to the page
      const factContainer = document.getElementById('fact-container');
      factContainer.innerText = chosen;
- }
+}
 
-  /**
+/**
  * Prompts user with questionnaire to test whether they are
  * humans or not. 
  */
- function questions() {
+function questions() {
      //Provide message along with prompt and question
     alert("To access this page, you need to answer a simple question.\n" +
             "You will be given a basic prompt and must provide an answer " +
@@ -63,5 +73,4 @@ function addRandomGreeting() {
     } else {
         window.location.assign("/denied.html");
     }
- }
- 
+}
