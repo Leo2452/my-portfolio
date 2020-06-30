@@ -43,3 +43,41 @@ function prevPage() {
   function redirect() {
       window.location.assign("/index.html");
   }
+
+/**
+ * Adds a random fact to the page
+ */
+function addRandomFact() {
+     const facts = 
+     ['I am currently trying to become fluent with my left hand!', 
+     'The longest I\'ve been awake for is ~30 hours - \
+     I do NOT recommend! Get sleep :)', 'I love to jump rope!', 
+     'I like riding bikes', 'I love (most) seafood, from shrimp to oysters!'];
+
+     //Pick a random fact
+     const chosen = facts[Math.floor(Math.random() * facts.length)];
+
+     //Add it to the page
+     const factContainer = document.getElementById('fact-container');
+     factContainer.innerText = chosen;
+}
+
+/**
+ * Prompts user with questionnaire to test whether they are
+ * humans or not. 
+ */
+function questions() {
+     //Provide message along with prompt and question
+    alert("To access this page, you need to answer a simple question.\n" +
+            "You will be given a basic prompt and must provide an answer " +
+            "to determine if you are a human.");
+    let ans = prompt("Hawks often hunt for small mammals like rabbits.\n" +
+     	                "Who is the prey in this relationship?");
+
+    //Redirect user to appropriate webpage
+    if(ans.toLowerCase() === "rabbits" || ans.toLowerCase() === "rabbit") {
+        window.location.assign("/homepage.html");
+    } else {
+        window.location.assign("/denied.html");
+    }
+}
