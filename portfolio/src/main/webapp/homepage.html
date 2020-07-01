@@ -13,8 +13,8 @@
       <button onclick="addRandomGreeting()">Hello</button>
       <div id="greeting-container"></div>
       <p>click here to get a personalized greeting:</p>
-      <button onclick="addSpecialGreeting()">Hello</button>
-      <div id="special-greeting-container"></div>
+      <div id="special-greeting-container"></div><br>
+      <input id="name-input" name="name-input" type="text" placeholder="What's your name?" onchange="addSpecialGreeting()">
 	  <form action="/data" method="POST">
 	    <ul id="comment-history"></ul><br>
 		<input name="input" placeholder="Leave a comment"><br>
