@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//Number of comments initialized with default value
+var commentValue = 3;
+
 /**
  * Adds a random greeting to the page.
  */
@@ -93,16 +96,36 @@ function questions() {
     }
 }
 
+/**
+ * Empties the current comment history and reloads it with a new 
+ * number of comments to load from num-comments textbox
+ */
+function updateComments() {
+    document.getElementById("comment-history").innerText = "";
+    getComments();
+}
 
 /**
  * Fetches the comments on webpage and displays a history of them.
  */
 function getComments() {
+    //Set a default value of comments to display
+    var numComments = document.getElementById("num-comments").value;
+    if (numComments == 0) {
+        numComments = commentValue;
+        document.getElementById("num-comments").value = numComments;
+    }
+    if (numComments != commentValue) {
+        commentValue = numComments;
+    }
+
     fetch('/data').then(response => response.json()).then(comments =>{
-        const history = document.getElementById('comment-history')
-        comments.forEach(line => {
-            history.appendChild(createListElement(line));
-        })
+        const history = document.getElementById("comment-history");
+        for (i = 0; i < numComments; i++) {
+            if (comments.length > i) {
+               history.appendChild(createListElement(comments[i]));
+            }
+        }
     })
 }
 
