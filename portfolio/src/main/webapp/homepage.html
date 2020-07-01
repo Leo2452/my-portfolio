@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="getComments()">
     <div id="content">
       <h1>Leo's Portfolio</h1>
       <p>Click here to get a random greeting:</p>
@@ -15,6 +15,11 @@
       <p>click here to get a personalized greeting:</p>
       <button onclick="addSpecialGreeting()">Hello</button>
       <div id="special-greeting-container"></div>
+	  <form action="/data" method="POST">
+	    <ul id="comment-history"></ul>
+		<textarea name="input"></textarea>
+		<input type="submit">
+	  </form>
       <p>My full name is Leobardo but I usually go by Leo. I'm 20 years old
           and I'm from Phoenix, Arizona. I'm the oldest of three, with two
           younger sisters. I'm a first generation college student studying

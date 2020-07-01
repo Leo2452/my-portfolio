@@ -27,22 +27,22 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-    private List<String> greetings;
-
-    @Override
-    public void init() {
-        greetings = new ArrayList<>();
-        greetings.add("Hi");
-        greetings.add("Hello");
-        greetings.add("Hey");
-    }
+    private List<String> comments = new ArrayList<>();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String greeting = convertToGson(greetings);
-
+	    String json = convertToGson(comments);
         response.setContentType("application/json;");
-        response.getWriter().println(greeting);
+        response.getWriter().println(json);
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String text = request.getParameter("input");
+        comments.add(text);
+
+        //Redirect user to the homepage
+        response.sendRedirect("/homepage.html");
     }
 
     /*Converts an arrayList instance into a JSON string with Gson library.*/
