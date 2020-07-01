@@ -16,11 +16,12 @@
       <button onclick="addSpecialGreeting()">Hello</button>
       <div id="special-greeting-container"></div>
 	  <form action="/data" method="POST">
-	    <ul id="comment-history"></ul>
-		<textarea name="input" placeholder="Leave a comment"></textarea>
-        <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()">
+	    <ul id="comment-history"></ul><br>
+		<input name="input" placeholder="Leave a comment"><br>
 		<input type="submit">
 	  </form>
+      <p>Number of comments to display:</p>
+      <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()"><br><br>
       <form action="/delete-data" method=POST>
         <button onclick="deleteComments()">Delete Comments</button>
       </form>

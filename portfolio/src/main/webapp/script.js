@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//Number of comments initialized with default value
-var commentValue = 3;
-
 /**
  * Adds a random greeting to the page.
  */
@@ -101,29 +98,30 @@ function questions() {
  * number of comments to load from num-comments textbox
  */
 function updateComments() {
+    var numComments = document.getElementById("num-comments").value;
+    if(numComments < 1 || (numComments - Number.parseInt(numComments)) !== 0) {
+        alert("Please enter a positive integer.");
+        return;
+    }
+
     document.getElementById("comment-history").innerText = "";
     getComments();
 }
 
 /**
- * Fetches the comments on webpage and displays a history of them.
+ * Fetches specified number of comments on webpage and 
+ * displays a history of them.
  */
 function getComments() {
-    //Set a default value of comments to display
     var numComments = document.getElementById("num-comments").value;
-    if (numComments == 0) {
-        numComments = commentValue;
-        document.getElementById("num-comments").value = numComments;
-    }
-    if (numComments != commentValue) {
-        commentValue = numComments;
-    }
-
     fetch('/data').then(response => response.json()).then(comments =>{
         const history = document.getElementById("comment-history");
         for (i = 0; i < numComments; i++) {
             if (comments.length > i) {
                history.appendChild(createListElement(comments[i]));
+            } else {
+                alert("Displaying maximum comments: " + comments.length.toString());
+                break;
             }
         }
     })
