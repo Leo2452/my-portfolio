@@ -18,9 +18,12 @@
 	  <form action="/data" method="POST">
 	    <ul id="comment-history"></ul>
 		<textarea name="input" placeholder="Leave a comment"></textarea>
-        <input type="number" name="num-comments" id="num-comments" min="1" max="5" onchange="updateComments()">
+        <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()">
 		<input type="submit">
 	  </form>
+      <form action="/delete-data" method=POST>
+        <button onclick="deleteComments()">Delete Comments</button>
+      </form>
       <p>My full name is Leobardo but I usually go by Leo. I'm 20 years old
           and I'm from Phoenix, Arizona. I'm the oldest of three, with two
           younger sisters. I'm a first generation college student studying

@@ -135,3 +135,8 @@ function createListElement(text) {
   liElement.innerText = text;
   return liElement;
 }
+
+/*Deletes all of the comment history inside the server's datastore*/
+function deleteComments() {
+    fetch("/delete-data");
+}
