@@ -14,6 +14,8 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -29,7 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that contains saves and gets comments from database. */
+/* Servlet that contains saves and gets comments from database. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
@@ -58,11 +60,13 @@ public class DataServlet extends HttpServlet {
         String text = request.getParameter("input");
         comments.add(text);
         long timestamp = System.currentTimeMillis();
+        UserService credentials = UserServiceFactory.getUserService();
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
         entry.setProperty("timestamp", timestamp);
         entry.setProperty("comment", text);
+        entry.setProperty("email", credentials.getCurrentUser().getEmail());
 
         //Put entry in datastore
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

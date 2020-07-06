@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="getComments()">
+  <body onload="checkStatus()">
     <div id="content">
       <h1>Leo's Portfolio</h1>
       <p>Click here to get a random greeting:</p>
@@ -15,16 +15,7 @@
       <p>click here to get a personalized greeting:</p>
       <div id="special-greeting-container"></div><br>
       <input id="name-input" name="name-input" type="text" placeholder="What's your name?" onchange="addSpecialGreeting()">
-	  <form action="/data" method="POST">
-	    <ul id="comment-history"></ul><br>
-		<input name="input" placeholder="Leave a comment"><br>
-		<input type="submit">
-	  </form>
-      <p>Number of comments to display:</p>
-      <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()"><br><br>
-      <form action="/delete-data" method=POST>
-        <button onclick="deleteComments()">Delete Comments</button>
-      </form>
+      <div id="box"></div>
       <p>My full name is Leobardo but I usually go by Leo. I'm 20 years old
           and I'm from Phoenix, Arizona. I'm the oldest of three, with two
           younger sisters. I'm a first generation college student studying

@@ -113,21 +113,21 @@ function updateComments() {
  * displays a history of them.
  */
 function getComments() {
-    var numComments = document.getElementById("num-comments").value;
+    var numComments = document.getElementById("num-comments");
+    if(numComments === null) {
+        return;
+    }
     fetch('/data').then(response => response.json()).then(comments =>{
         const history = document.getElementById("comment-history");
-        for (i = 0; i < numComments; i++) {
+        for (i = 0; i < numComments.value; i++) {
             if (comments.length > i) {
                history.appendChild(createListElement(comments[i]));
-            } else {
-                alert("Displaying maximum comments: " + comments.length.toString());
-                break;
             }
         }
     })
 }
 
-/** Creates an <li> element containing text. */
+/* Creates an <li> element containing text. */
 function createListElement(text) {
   const liElement = document.createElement('li');
   liElement.innerText = text;
@@ -137,4 +137,12 @@ function createListElement(text) {
 /*Deletes all of the comment history inside the server's datastore*/
 function deleteComments() {
     fetch("/delete-data");
+}
+
+function checkStatus() {
+    var commentSection = document.getElementById("box");
+    fetch('/login').then(response => response.text()).then(comments => {
+        commentSection.innerHTML = comments;
+        getComments();
+    });
 }
