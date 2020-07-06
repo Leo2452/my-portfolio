@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
 
     private List<String> comments = new ArrayList<>();
+    private final Gson gson = new Gson();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -48,9 +49,8 @@ public class DataServlet extends HttpServlet {
             history.add(curr);
         }
 
-        String json = convertToGson(history);
         response.setContentType("application/json;");
-        response.getWriter().println(json);
+        response.getWriter().println(gson.toJson(history));
     }
 
     @Override
@@ -70,12 +70,5 @@ public class DataServlet extends HttpServlet {
 
         //Redirect user to the homepage
         response.sendRedirect("/homepage.html");
-    }
-
-    /*Converts an arrayList instance into a JSON string with Gson library.*/
-    private String convertToGson(List<String> arr) {
-        Gson conversion = new Gson();
-        String result = conversion.toJson(arr);
-        return result;
     }
 }
