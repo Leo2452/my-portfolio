@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/*Servlet used to delete comments from datastore*/
+/* Servlet used to delete comments from datastore. */
 @WebServlet("/delete-data")
 public class DeleteDataServlet extends HttpServlet {
 
