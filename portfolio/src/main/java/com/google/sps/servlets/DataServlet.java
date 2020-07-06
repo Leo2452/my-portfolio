@@ -14,6 +14,7 @@
 
 package com.google.sps.servlets;
 
+import com.google.sps.data.Comment;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -25,6 +26,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -39,15 +41,18 @@ public class DataServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query find = new Query("comment").addSort("timestamp", SortDirection.DESCENDING);
+        Query find = new Query("comment").addSort("date", SortDirection.DESCENDING);
         DatastoreService data = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = data.prepare(find);
 
         //Construct an array of comment history
-        List<String> history = new ArrayList<>();
+        List<Comment> history = new ArrayList<>();
         for (Entity entry: results.asIterable()) {
             String curr = (String) entry.getProperty("comment");
-            history.add(curr);
+            Date time = (Date) entry.getProperty("date");
+            String user = (String) entry.getProperty("email");
+
+            history.add(new Comment(curr, time, user));
         }
 
         String json = convertToGson(history);
@@ -59,12 +64,12 @@ public class DataServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String text = request.getParameter("input");
         comments.add(text);
-        long timestamp = System.currentTimeMillis();
+        Date date = new Date();
         UserService credentials = UserServiceFactory.getUserService();
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
-        entry.setProperty("timestamp", timestamp);
+        entry.setProperty("date", date);
         entry.setProperty("comment", text);
         entry.setProperty("email", credentials.getCurrentUser().getEmail());
 
@@ -77,7 +82,7 @@ public class DataServlet extends HttpServlet {
     }
 
     /*Converts an arrayList instance into a JSON string with Gson library.*/
-    private String convertToGson(List<String> arr) {
+    private String convertToGson(List<Comment> arr) {
         Gson conversion = new Gson();
         String result = conversion.toJson(arr);
         return result;

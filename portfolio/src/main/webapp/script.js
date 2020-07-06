@@ -128,9 +128,10 @@ function getComments() {
 }
 
 /* Creates an <li> element containing text. */
-function createListElement(text) {
+function createListElement(fullComment) {
   const liElement = document.createElement('li');
-  liElement.innerText = text;
+  liElement.innerText = fullComment.content + "\n" + "Submitted on " 
+                        + fullComment.date + " by " + fullComment.email + "\n\n";
   return liElement;
 }
 
