@@ -14,13 +14,6 @@
 
 package com.google.sps.servlets;
 
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -34,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 public class GreetingServlet extends HttpServlet {
 
     private List<String> greetings;
-    private String message;
 
     @Override
     public void init() {
