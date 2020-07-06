@@ -48,7 +48,7 @@ public class DataServlet extends HttpServlet {
             history.add(curr);
         }
 
-	    String json = convertToGson(history);
+        String json = convertToGson(history);
         response.setContentType("application/json;");
         response.getWriter().println(json);
     }
