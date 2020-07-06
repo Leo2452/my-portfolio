@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that creates a log-in page for users to access comments. */
+/** Servlet that checks if user is logged in to display appropriate content */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
@@ -49,7 +49,8 @@ public class LoginServlet extends HttpServlet {
             out.println("<input type=\"submit\">");
             out.println("</form>");
             out.println("<p>Number of comments to display:</p>");
-            out.println("<input type=\"number\" name=\"num-comments\" id=\"num-comments\" min=\"1\" value=\"10\" onchange=\"updateComments()\"><br><br>");
+            out.println("<input type=\"number\" name=\"num-comments\" id=\"num-comments\"" 
+                        + "min=\"1\" value=\"10\" onchange=\"updateComments()\"><br><br>");
             out.println("<form action=\"/delete-data\" method=POST>");
             out.println("<button onclick=\"deleteComments()\">Delete Comments</button>");
             out.println("</form>");

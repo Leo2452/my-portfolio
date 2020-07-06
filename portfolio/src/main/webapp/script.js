@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Adds a random greeting to the page.
- */
+/** Adds a random greeting to the page. */
 function addRandomGreeting() {
   const greetings =
       ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
@@ -27,20 +25,16 @@ function addRandomGreeting() {
   greetingContainer.innerText = greeting;
 }
 
-/**
- * Prompt client for their name and give them a special greeting.
- */
+/** Prompt client for their name and give them a special greeting. */
 function addSpecialGreeting() {
     var client = document.getElementById('name-input').value;
     fetch('/special-greeting').then(response => response.text()).then(greeting => {
         document.getElementById("special-greeting-container").innerText = 
-        greeting + client + ", welcome to my page :)";
+        greeting + " " + client + ", welcome to my page :)";
     })
 }
 
-/**
- * Makes sure user wants to return to previous page.
- */
+/** Makes sure user wants to return to previous page. */
 function prevPage() {
     let returning = confirm('Returning to previous page');
     if(returning) {
@@ -48,16 +42,12 @@ function prevPage() {
     }
 }
 
- /**
-  * Redirect the user to the index page to determine authorization
-  */
-  function redirect() {
-      window.location.assign("/index.html");
-  }
+ /** Redirect the user to the index page to determine authorization */
+function redirect() {
+    window.location.assign("/index.html");
+}
 
-/**
- * Adds a random fact to the page
- */
+/** Add a random fact to the page. */
 function addRandomFact() {
      const facts = 
      ['I am currently trying to become fluent with my left hand!', 
@@ -73,10 +63,7 @@ function addRandomFact() {
      factContainer.innerText = chosen;
 }
 
-/**
- * Prompts user with questionnaire to test whether they are
- * humans or not. 
- */
+/** Prompts user with questionnaire to test whether they are humans or not. */
 function questions() {
      //Provide message along with prompt and question
     alert("To access this page, you need to answer a simple question.\n" +
@@ -95,7 +82,7 @@ function questions() {
 
 /**
  * Empties the current comment history and reloads it with a new 
- * number of comments to load from num-comments textbox
+ * number of comments to load from num-comments textbox.
  */
 function updateComments() {
     var numComments = document.getElementById("num-comments").value;
@@ -108,10 +95,7 @@ function updateComments() {
     getComments();
 }
 
-/**
- * Fetches specified number of comments on webpage and 
- * displays a history of them.
- */
+/** Fetches specified number of comments on webpage and displays a history of them. */
 function getComments() {
     var numComments = document.getElementById("num-comments");
     if(numComments === null) {
@@ -127,7 +111,7 @@ function getComments() {
     })
 }
 
-/* Creates an <li> element containing text. */
+/** Creates an <li> element containing text. */
 function createListElement(fullComment) {
   const liElement = document.createElement('li');
   liElement.innerText = fullComment.content + "\n" + "Submitted on " 
@@ -135,11 +119,12 @@ function createListElement(fullComment) {
   return liElement;
 }
 
-/*Deletes all of the comment history inside the server's datastore*/
+/** Deletes all of the comment history inside the server's datastore. */
 function deleteComments() {
     fetch("/delete-data");
 }
 
+/** Check if user is logged in to display comments. */
 function checkStatus() {
     var commentSection = document.getElementById("box");
     fetch('/login').then(response => response.text()).then(comments => {

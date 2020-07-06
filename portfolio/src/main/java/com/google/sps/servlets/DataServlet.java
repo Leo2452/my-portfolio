@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/* Servlet that contains saves and gets comments from database. */
+/* Servlet that contains, saves and gets comments from database. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 

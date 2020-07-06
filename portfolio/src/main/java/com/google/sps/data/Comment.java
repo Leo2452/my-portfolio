@@ -16,7 +16,7 @@ package com.google.sps.data;
 
 import java.util.Date;
 
-/* Class containing comment stats. */
+/* Class containing and initializing comment stats. */
 public final class Comment {
 
   private final String content;
