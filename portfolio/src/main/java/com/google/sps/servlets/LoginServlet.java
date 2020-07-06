@@ -40,25 +40,30 @@ public class LoginServlet extends HttpServlet {
 
         UserService credentials = UserServiceFactory.getUserService();
         if(credentials.isUserLoggedIn()) {
-            String logoutUrl = credentials.createLogoutURL("/homepage.html");
-            out.println("<p>Welcome back, " + credentials.getCurrentUser().getEmail() + ".</p>");
-            
-            out.println("<form action=\"/data\" method=\"POST\">");
-            out.println("<ul id=\"comment-history\"></ul><br>");
-            out.println("<input name=\"input\" placeholder=\"Leave a comment\"><br>");
-            out.println("<input type=\"submit\">");
-            out.println("</form>");
-            out.println("<p>Number of comments to display:</p>");
-            out.println("<input type=\"number\" name=\"num-comments\" id=\"num-comments\"" 
-                        + "min=\"1\" value=\"10\" onchange=\"updateComments()\"><br><br>");
-            out.println("<form action=\"/delete-data\" method=POST>");
-            out.println("<button onclick=\"deleteComments()\">Delete Comments</button>");
-            out.println("</form>");
-
-            out.println("<p>Logout <a href=\"" + logoutUrl + "\">here.</p>");
+            outputComments(out);
         } else {
             String loginUrl = credentials.createLoginURL("/homepage.html");
             out.println("<p>Please login <a href=\"" + loginUrl + "\">here.</a></p>");
         }
+    }
+
+    /** Produces the comment section. */
+    private void outputComments(PrintWriter out) {
+        String logoutUrl = credentials.createLogoutURL("/homepage.html");
+        out.println("<p>Welcome back, " + credentials.getCurrentUser().getEmail() + ".</p>");
+
+        out.println("<form action=\"/data\" method=\"POST\">");
+        out.println("<ul id=\"comment-history\"></ul><br>");
+        out.println("<input name=\"input\" placeholder=\"Leave a comment\"><br>");
+        out.println("<input type=\"submit\">");
+        out.println("</form>");
+        out.println("<p>Number of comments to display:</p>");
+        out.println("<input type=\"number\" name=\"num-comments\" id=\"num-comments\""
+                    + "min=\"1\" value=\"10\" onchange=\"updateComments()\"><br><br>");
+        out.println("<form action=\"/delete-data\" method=POST>");
+        out.println("<button onclick=\"deleteComments()\">Delete Comments</button>");
+        out.println("</form>");
+
+        out.println("<p>Logout <a href=\"" + logoutUrl + "\">here.</p>");
     }
 }
