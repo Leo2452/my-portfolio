@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
 
         UserService credentials = UserServiceFactory.getUserService();
         if(credentials.isUserLoggedIn()) {
-            outputComments(out);
+            outputComments(out, credentials);
         } else {
             String loginUrl = credentials.createLoginURL("/homepage.html");
             out.println("<p>Please login <a href=\"" + loginUrl + "\">here.</a></p>");
@@ -48,7 +48,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     /** Produces the comment section. */
-    private void outputComments(PrintWriter out) {
+    private void outputComments(PrintWriter out, UserService credentials) {
         String logoutUrl = credentials.createLogoutURL("/homepage.html");
         out.println("<p>Welcome back, " + credentials.getCurrentUser().getEmail() + ".</p>");
 
