@@ -28,6 +28,17 @@ function addRandomGreeting() {
 }
 
 /**
+ * Prompt client for their name and give them a special greeting.
+ */
+function addSpecialGreeting() {
+    var client = document.getElementById('name-input').value;
+    fetch('/special-greeting').then(response => response.text()).then(greeting => {
+        document.getElementById("special-greeting-container").innerText = 
+        greeting + client + ", welcome to my page :)";
+    })
+}
+
+/**
  * Makes sure user wants to return to previous page.
  */
 function prevPage() {
@@ -80,4 +91,50 @@ function questions() {
     } else {
         window.location.assign("/denied.html");
     }
+}
+
+/**
+ * Empties the current comment history and reloads it with a new 
+ * number of comments to load from num-comments textbox
+ */
+function updateComments() {
+    var numComments = document.getElementById("num-comments").value;
+    if(numComments < 1 || !Number.isInteger(numComments)) {
+        alert("Please enter a positive integer.");
+        return;
+    }
+
+    document.getElementById("comment-history").innerText = "";
+    getComments();
+}
+
+/**
+ * Fetches specified number of comments on webpage and 
+ * displays a history of them.
+ */
+function getComments() {
+    var numComments = document.getElementById("num-comments").value;
+    fetch('/data').then(response => response.json()).then(comments =>{
+        const history = document.getElementById("comment-history");
+        for (i = 0; i < numComments; i++) {
+            if (comments.length > i) {
+               history.appendChild(createListElement(comments[i]));
+            } else {
+                alert("Displaying maximum comments: " + comments.length.toString());
+                break;
+            }
+        }
+    })
+}
+
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
+}
+
+/*Deletes all of the comment history inside the server's datastore*/
+function deleteComments() {
+    fetch("/delete-data");
 }
