@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
 import com.google.sps.data.Comment;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -52,8 +55,9 @@ public class DataServlet extends HttpServlet {
             String curr = (String) entry.getProperty("comment");
             Date time = (Date) entry.getProperty("date");
             String user = (String) entry.getProperty("email");
+            float sentiment = (float) entry.getProperty("sentiment");
 
-            history.add(new Comment(curr, time, user));
+            history.add(new Comment(curr, time, user, sentiment));
         }
 
         response.setContentType("application/json;");
@@ -67,11 +71,19 @@ public class DataServlet extends HttpServlet {
         Date date = new Date();
         UserService credentials = UserServiceFactory.getUserService();
 
+        Document doc =
+            Document.newBuilder().setContent(text).setType(Document.Type.PLAIN_TEXT).build();
+        LanguageServiceClient languageService = LanguageServiceClient.create();
+        Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
+        float score = sentiment.getScore();
+        languageService.close();
+
         //Create Entity of entry
         Entity entry = new Entity("comment");
         entry.setProperty("date", date);
         entry.setProperty("comment", text);
         entry.setProperty("email", credentials.getCurrentUser().getEmail());
+        entry.setProperty("sentiment", score);
 
         //Put entry in datastore
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
