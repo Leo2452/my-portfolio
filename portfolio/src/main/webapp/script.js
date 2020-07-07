@@ -86,7 +86,7 @@ function questions() {
  */
 function updateComments() {
     var numComments = document.getElementById("num-comments").value;
-    if(numComments < 1 || (numComments - Number.parseInt(numComments)) !== 0) {
+    if(numComments < 1 || !Number.isInteger(numComments)) {
         alert("Please enter a positive integer.");
         return;
     }
