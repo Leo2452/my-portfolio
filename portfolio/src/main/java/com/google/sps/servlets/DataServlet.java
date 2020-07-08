@@ -52,12 +52,12 @@ public class DataServlet extends HttpServlet {
         //Construct an array of comment history
         List<Comment> history = new ArrayList<>();
         for (Entity entry: results.asIterable()) {
-            String curr = (String) entry.getProperty("comment");
+            String curr = (String) entry.getProperty("text");
             Date time = (Date) entry.getProperty("date");
             String user = (String) entry.getProperty("email");
-            float sentiment = (float) entry.getProperty("sentiment");
+            double score = (double) entry.getProperty("score");
 
-            history.add(new Comment(curr, time, user, sentiment));
+            history.add(new Comment(curr, time, user, score));
         }
 
         response.setContentType("application/json;");
@@ -75,15 +75,15 @@ public class DataServlet extends HttpServlet {
             Document.newBuilder().setContent(text).setType(Document.Type.PLAIN_TEXT).build();
         LanguageServiceClient languageService = LanguageServiceClient.create();
         Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
-        float score = sentiment.getScore();
+        double score = sentiment.getScore();
         languageService.close();
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
         entry.setProperty("date", date);
-        entry.setProperty("comment", text);
+        entry.setProperty("text", text);
         entry.setProperty("email", credentials.getCurrentUser().getEmail());
-        entry.setProperty("sentiment", score);
+        entry.setProperty("score", score);
 
         //Put entry in datastore
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

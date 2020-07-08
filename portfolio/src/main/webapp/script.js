@@ -80,13 +80,18 @@ function questions() {
     }
 }
 
+/** Converts a string into a float and checks if it is an int. */
+function isInteger(input) {
+    return Number.isInteger(Number.parseFloat(input));
+}
+
 /**
  * Empties the current comment history and reloads it with a new 
  * number of comments to load from num-comments textbox.
  */
 function updateComments() {
     var numComments = document.getElementById("num-comments").value;
-    if(numComments < 1 || !Number.isInteger(numComments)) {
+    if(numComments < 1 || !isInteger(numComments)) {
         alert("Please enter a positive integer.");
         return;
     }
@@ -114,8 +119,9 @@ function getComments() {
 /** Creates an <li> element containing text. */
 function createListElement(fullComment) {
   const liElement = document.createElement('li');
-  liElement.innerText = fullComment.content + "\n" + "Submitted on " 
-                        + fullComment.date + " by " + fullComment.email + "\n\n";
+  liElement.innerText = fullComment.content + "\nSentiment Score: "
+                        + fullComment.score + "\n Submitted on " + fullComment.date
+                        + " by " + fullComment.email + "\n\n";
   return liElement;
 }
 

@@ -22,13 +22,13 @@ public final class Comment {
   private final String content;
   private final Date date;
   private final String email;
-  private final float sentiment;
+  private final double score;
 
-  public Comment(String content, Date date, String email, float sentiment) {
+  public Comment(String content, Date date, String email, double score) {
       this.content = content;
       this.date = date;
       this.email = email;
-      this.sentiment = sentiment;
+      this.score = score;
   }
 
   public String getContent() {
@@ -43,7 +43,7 @@ public final class Comment {
     return email;
   }
 
-  public float getSentiment() {
-      return sentiment;
+  public double getScore() {
+      return score;
   }
 }
