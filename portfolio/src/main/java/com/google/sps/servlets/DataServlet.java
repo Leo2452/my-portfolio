@@ -37,41 +37,40 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-    private List<String> comments = new ArrayList<>();
     private final Gson gson = new Gson();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query find = new Query("comment").addSort("date", SortDirection.DESCENDING);
-        DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery results = data.prepare(find);
+        Query query = new Query("comment").addSort("date", SortDirection.DESCENDING);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery results = datastore.prepare(query);
 
         //Construct an array of comment history
-        List<Comment> history = new ArrayList<>();
+        List<Comment> commentHistory = new ArrayList<>();
         for (Entity entry: results.asIterable()) {
-            String curr = (String) entry.getProperty("comment");
-            Date time = (Date) entry.getProperty("date");
-            String user = (String) entry.getProperty("email");
+            String content = (String) entry.getProperty("content");
+            Date date = (Date) entry.getProperty("date");
+            String email = (String) entry.getProperty("email");
 
-            history.add(new Comment(curr, time, user));
+            commentHistory.add(new Comment(content, date, email));
         }
 
         response.setContentType("application/json;");
-        response.getWriter().println(gson.toJson(history));
+        response.getWriter().println(gson.toJson(commentHistory));
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String text = request.getParameter("input");
-        comments.add(text);
+        String content = request.getParameter("input");
         Date date = new Date();
         UserService credentials = UserServiceFactory.getUserService();
+        String email = credentials.getCurrentUser().getEmail();
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
         entry.setProperty("date", date);
-        entry.setProperty("comment", text);
-        entry.setProperty("email", credentials.getCurrentUser().getEmail());
+        entry.setProperty("content", content);
+        entry.setProperty("email", email);
 
         //Put entry in datastore
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
