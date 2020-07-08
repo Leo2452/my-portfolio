@@ -104,7 +104,7 @@ function isInteger(input) {
  */
 function updateComments() {
     var numComments = document.getElementById("num-comments").value;
-    if(numComments < 1 || !isInteger(numComments)) {
+    if(!isInteger(numComments) || Number.parseFloat(numComments) < 1) {
         alert("Please enter a positive integer.");
         return;
     }
