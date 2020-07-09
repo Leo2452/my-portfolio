@@ -95,7 +95,7 @@ function questions() {
 
 /** Converts a string into a float and checks if it is an int. */
 function isInteger(input) {
-    return Number.isInteger(Number.parseFloat(input));
+    return Number.isInteger(input);
 }
 
 /**
@@ -103,8 +103,9 @@ function isInteger(input) {
  * number of comments to load from num-comments textbox
  */
 function updateComments() {
-    var numComments = document.getElementById("num-comments").value;
-    if(!isInteger(numComments) || Number.parseFloat(numComments) < 1) {
+    var numCommentsString = document.getElementById("num-comments").value;
+    var numCommentsFloat = Number.parseFloat(numComments);
+    if(!isInteger(numCommentsFloat) || numCommentsFloat < 1) {
         alert("Please enter a positive integer.");
         return;
     }
