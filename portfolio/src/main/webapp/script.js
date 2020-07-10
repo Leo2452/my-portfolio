@@ -102,10 +102,10 @@ function getComments() {
         return;
     }
     fetch('/data').then(response => response.json()).then(comments =>{
-        const history = document.getElementById("comment-history");
+        const commentHistory = document.getElementById("comment-history");
         for (i = 0; i < numComments.value; i++) {
             if (comments.length > i) {
-               history.appendChild(createListElement(comments[i]));
+               commentHistory.appendChild(createListElement(comments[i]));
             }
         }
     })
@@ -126,9 +126,34 @@ function deleteComments() {
 
 /** Check if user is logged in to display comments. */
 function checkStatus() {
-    var commentSection = document.getElementById("box");
-    fetch('/login').then(response => response.text()).then(comments => {
-        commentSection.innerHTML = comments;
-        getComments();
+    fetch('/login').then(response => response.json()).then((loginInfo) => {
+        var changeStatus;
+        var container;
+        var commentDisplay = document.getElementById("commentDisplay");
+        if(loginInfo.loggedIn == true) {
+            changeStatus = "Logout";
+            commentDisplay.style.display = "block";
+            getComments();
+        } else {
+            changeStatus = "Login";
+            commentDisplay.style.display = "none";
+        }
+        container = document.getElementById("box");
+        showLoginStatus(changeStatus, loginInfo.url, container);
     });
+}
+
+/** Show option to log in or log out. */
+function showLoginStatus(changeStatus, url, container) {
+    var logoutReference = createAElement(url);
+    container.innerText = changeStatus + " ";
+    container.appendChild(logoutReference);
+}
+
+/** Creates an <a> element containing text. */
+function createAElement(url) {
+  const aElement = document.createElement('a');
+  aElement.setAttribute('href', url);
+  aElement.innerText = "here";
+  return aElement;
 }
