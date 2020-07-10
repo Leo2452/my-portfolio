@@ -14,6 +14,8 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.Comment;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -44,19 +46,23 @@ public class DataServlet extends HttpServlet {
         Query query = new Query("comment").addSort("date", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
-
-        //Construct an array of comment history
-        List<Comment> commentHistory = new ArrayList<>();
-        for (Entity entry: results.asIterable()) {
-            String content = (String) entry.getProperty("content");
-            Date date = (Date) entry.getProperty("date");
-            String email = (String) entry.getProperty("email");
-
-            commentHistory.add(new Comment(content, date, email));
-        }
-
+        UserService credentials = UserServiceFactory.getUserService();
         response.setContentType("application/json;");
-        response.getWriter().println(gson.toJson(commentHistory));
+
+        if(!credentials.isUserLoggedIn()) {
+            response.getWriter().println("");
+        } else {
+            //Construct an array of comment history
+            List<Comment> commentHistory = new ArrayList<>();
+            for (Entity entry: results.asIterable()) {
+                String content = (String) entry.getProperty("content");
+                Date date = (Date) entry.getProperty("date");
+                String email = (String) entry.getProperty("email");
+
+                commentHistory.add(new Comment(content, date, email));
+            }
+            response.getWriter().println(gson.toJson(commentHistory));
+        }
     }
 
     @Override
