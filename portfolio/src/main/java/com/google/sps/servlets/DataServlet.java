@@ -14,11 +14,9 @@
 
 package com.google.sps.servlets;
 
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+import com.google.sps.data.LoginInfo;
 import com.google.sps.data.Comment;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+import com.google.sps.data.Access;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -35,7 +33,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/* Servlet that contains, saves and gets comments from database. */
+/** Servlet that contains, saves and gets comments from database. 
+ *  Uses LoginServlet to determine if a user is logged in to
+ *  either show or hide comments.
+ */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
@@ -49,11 +50,11 @@ public class DataServlet extends HttpServlet {
         UserService credentials = UserServiceFactory.getUserService();
         response.setContentType("application/json;");
 
-        if(!credentials.isUserLoggedIn()) {
-            response.getWriter().println("");
-        } else {
-            //Construct an array of comment history
-            List<Comment> commentHistory = new ArrayList<>();
+        List<Comment> commentHistory = new ArrayList<>();
+        LoginInfo userLogin = (LoginInfo) request.getAttribute("userLogin");
+
+        // Display comments if logged in
+        if(userLogin.isLoggedIn()) {
             for (Entity entry: results.asIterable()) {
                 String content = (String) entry.getProperty("content");
                 Date date = (Date) entry.getProperty("date");
@@ -61,8 +62,9 @@ public class DataServlet extends HttpServlet {
 
                 commentHistory.add(new Comment(content, date, email));
             }
-            response.getWriter().println(gson.toJson(commentHistory));
         }
+        Access access = new Access(commentHistory, userLogin);
+        response.getWriter().println(gson.toJson(access));
     }
 
     @Override
@@ -78,11 +80,8 @@ public class DataServlet extends HttpServlet {
         entry.setProperty("content", content);
         entry.setProperty("email", email);
 
-        //Put entry in datastore
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(entry);
-
-        //Redirect user to the homepage
         response.sendRedirect("/homepage.html");
     }
 }

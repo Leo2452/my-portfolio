@@ -14,27 +14,20 @@
 
 package com.google.sps.data;
 
-/* Class to keep track of login information of a user. */
-public class LoginInfo {
-    private boolean loggedIn;
-    private String url;
-    private String userEmail;
+import com.google.sps.data.LoginInfo;
+import com.google.sps.data.Comment;
+import java.util.ArrayList;
+import java.util.List;
 
-    public LoginInfo(boolean status, String url, String userEmail) {
-        this.loggedIn = status;
-        this.url = url;
-        this.userEmail = userEmail;
-    }
+/** Class to keep track of user's login information along
+ *  with the comment history to show according to the status.
+  */
+public final class Access {
+    private final List<Comment> commentHistory;
+    private final LoginInfo userLogin;
 
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
+    public Access(List<Comment> commentHistory, LoginInfo userLogin) {
+        this.commentHistory = commentHistory;
+        this.userLogin = userLogin;
     }
 }

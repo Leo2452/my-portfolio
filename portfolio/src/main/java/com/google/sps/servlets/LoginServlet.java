@@ -26,19 +26,23 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that checks if user is logged in and grabs their email. */
+/** Servlet that grabs a user's login status and dispatches
+ *  to DataServlet to display its content according to the status.
+ */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;");
         PrintWriter out = response.getWriter();
         boolean loggedIn;
@@ -57,6 +61,8 @@ public class LoginServlet extends HttpServlet {
         }
 
         LoginInfo userLogin = new LoginInfo(loggedIn, url, userEmail);
-        out.println(gson.toJson(userLogin));
+        request.setAttribute("userLogin", userLogin);
+        RequestDispatcher dispatch = request.getRequestDispatcher("/data");
+        dispatch.forward(request, response);
     }
 }

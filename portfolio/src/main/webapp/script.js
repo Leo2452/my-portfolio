@@ -80,9 +80,9 @@ function questions() {
     }
 }
 
-/**
- * Empties the current comment history and reloads it with a new 
- * number of comments to load from num-comments textbox.
+/** Empties the current comment history and reloads it with a new 
+ *  number of comments to load from num-comments textbox. Checks 
+ *  status of user to ensure they are still logged in.
  */
 function updateComments() {
     var numComments = document.getElementById("num-comments").value;
@@ -92,23 +92,23 @@ function updateComments() {
     }
 
     document.getElementById("comment-history").innerText = "";
-    getComments();
+    checkStatus();
 }
 
-/** Fetches specified number of comments on webpage and displays a history of them. */
-function getComments() {
+/** Displays the comments passed in as a parameter according to the number
+ *  of comments the user wants displayed.
+ */
+function getComments(comments) {
     var numComments = document.getElementById("num-comments");
     if(numComments === null) {
         return;
     }
-    fetch('/data').then(response => response.json()).then(comments =>{
-        const commentHistory = document.getElementById("comment-history");
-        for (i = 0; i < numComments.value; i++) {
-            if (comments.length > i) {
-               commentHistory.appendChild(createListElement(comments[i]));
-            }
+    const commentHistory = document.getElementById("comment-history");
+    for (i = 0; i < numComments.value; i++) {
+        if (comments.length > i) {
+            commentHistory.appendChild(createListElement(comments[i]));
         }
-    })
+    }
 }
 
 /** Creates an <li> element containing text. */
@@ -124,22 +124,22 @@ function deleteComments() {
     fetch("/delete-data");
 }
 
-/** Check if user is logged in to display comments. */
+/** Check if a user is logged in to show comments along with their status. */
 function checkStatus() {
-    fetch('/login').then(response => response.json()).then((loginInfo) => {
+    fetch('/login').then(response => response.json()).then((access) => {
         var changeStatus;
         var container;
         var commentDisplay = document.getElementById("commentDisplay");
-        if(loginInfo.loggedIn == true) {
+        if(access.userLogin.loggedIn == true) {
             changeStatus = "Logout";
             commentDisplay.style.display = "block";
-            getComments();
+            getComments(access.commentHistory);
         } else {
             changeStatus = "Login";
             commentDisplay.style.display = "none";
         }
         container = document.getElementById("box");
-        showLoginStatus(changeStatus, loginInfo.url, container);
+        showLoginStatus(changeStatus, access.userLogin.url, container);
     });
 }
 
