@@ -14,7 +14,12 @@
 
 package com.google.sps.servlets;
 
+<<<<<<< HEAD
 import com.google.sps.data.LoginInfo;
+=======
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+>>>>>>> fe04ab020e08463c2b971addb77d0a00cd79adcf
 import com.google.sps.data.Comment;
 import com.google.sps.data.Access;
 import com.google.appengine.api.datastore.PreparedQuery;
