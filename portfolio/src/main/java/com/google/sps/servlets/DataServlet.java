@@ -41,13 +41,13 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
+    private String currentUserEmail;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Query query = new Query("comment").addSort("date", SortDirection.DESCENDING);
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
-        UserService credentials = UserServiceFactory.getUserService();
         response.setContentType("application/json;");
 
         List<Comment> commentHistory = new ArrayList<>();
@@ -62,6 +62,7 @@ public class DataServlet extends HttpServlet {
 
                 commentHistory.add(new Comment(content, date, email));
             }
+            currentUserEmail = userLogin.getUserEmail();
         }
         Access access = new Access(commentHistory, userLogin);
         response.getWriter().println(gson.toJson(access));
@@ -71,8 +72,7 @@ public class DataServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String content = request.getParameter("input");
         Date date = new Date();
-        UserService credentials = UserServiceFactory.getUserService();
-        String email = credentials.getCurrentUser().getEmail();
+        String email = currentUserEmail;
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
