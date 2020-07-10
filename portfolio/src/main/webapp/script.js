@@ -85,8 +85,9 @@ function questions() {
  *  status of user to ensure they are still logged in.
  */
 function updateComments() {
-    var numComments = document.getElementById("num-comments").value;
-    if(numComments < 1 || !Number.isInteger(numComments)) {
+    var numCommentsString = document.getElementById("num-comments").value;
+    var numCommentsFloat = Number.parseFloat(numComments);
+    if(!Number.isInteger(numCommentsFloat) || numCommentsFloat < 1) {
         alert("Please enter a positive integer.");
         return;
     }
