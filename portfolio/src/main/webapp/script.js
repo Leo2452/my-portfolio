@@ -98,8 +98,9 @@ function questions() {
  * number of comments to load from num-comments textbox
  */
 function updateComments() {
-    var numComments = document.getElementById("num-comments").value;
-    if(numComments < 1 || !Number.isInteger(numComments)) {
+    var numCommentsString = document.getElementById("num-comments").value;
+    var numCommentsFloat = Number.parseFloat(numComments);
+    if(!Number.isInteger(numCommentsFloat) || numCommentsFloat < 1) {
         alert("Please enter a positive integer.");
         return;
     }
