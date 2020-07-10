@@ -93,11 +93,6 @@ function questions() {
     }
 }
 
-/** Converts a string into a float and checks if it is an int. */
-function isInteger(input) {
-    return Number.isInteger(input);
-}
-
 /**
  * Empties the current comment history and reloads it with a new 
  * number of comments to load from num-comments textbox
@@ -105,7 +100,7 @@ function isInteger(input) {
 function updateComments() {
     var numCommentsString = document.getElementById("num-comments").value;
     var numCommentsFloat = Number.parseFloat(numComments);
-    if(!isInteger(numCommentsFloat) || numCommentsFloat < 1) {
+    if(!Number.isInteger(numCommentsFloat) || numCommentsFloat < 1) {
         alert("Please enter a positive integer.");
         return;
     }
