@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="checkStatus()">
+  <body onload="display()">
     <div id="content">
       <h1>Leo's Portfolio</h1>
       <p>Click here to get a random greeting:</p>
@@ -17,14 +17,14 @@
       <div id="welcome-box"></div>
       <input id="name-input" name="name-input" type="text" placeholder="What's your name?" onchange="addSpecialGreeting()">
       <div id="comment-display">
-        <form action="/data" method="POST">
-	      <ul id="comment-history"></ul><br>
+        <form action="/comments" method="POST">
+	      <div id="comment-section"></div><br>
 		  <input name="input" placeholder="Leave a comment"><br>
 		  <input type="submit">
 	    </form>
         <p>Number of comments to display:</p>
         <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()"><br><br>
-        <form action="/delete-data" method=POST>
+        <form action="/delete-comments" method=POST>
           <button onclick="deleteComments()">Delete Comments</button>
         </form>
       </div>
