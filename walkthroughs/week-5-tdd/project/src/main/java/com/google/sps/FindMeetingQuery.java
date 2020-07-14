@@ -19,11 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class FindMeetingQuery {
-    public static final int END_OF_DAY = 1440;
-
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
         Collection<TimeRange> workingTimes = new ArrayList<TimeRange>();
-        int start = 0;
+        int start = TimeRange.START_OF_DAY;
         int end;
         for(Event occasion: events) {
             for(String member: request.getAttendees()) {
@@ -31,7 +29,7 @@ public final class FindMeetingQuery {
                 if(occasion.getAttendees().contains(member)) {
                     end = occasion.getWhen().start();
                     if(end - start >= request.getDuration()) {
-                        workingTimes.add(TimeRange.fromStartDuration(start, end - start));
+                        workingTimes.add(TimeRange.fromStartEnd(start, end, false));
                     }
                     // Change start if endpoint of another person is greater
                     if(occasion.getWhen().end() > start) {
@@ -41,9 +39,9 @@ public final class FindMeetingQuery {
             }
         }
         // Check possibilities using the end of the day
-        end = END_OF_DAY;
+        end = TimeRange.END_OF_DAY;
         if(end - start >= request.getDuration()) {
-            workingTimes.add(TimeRange.fromStartDuration(start, end - start));
+            workingTimes.add(TimeRange.fromStartEnd(start, end, true));
         }
         return workingTimes;
     }
