@@ -35,22 +35,22 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;");
-        boolean loggedIn;
+        boolean isLoggedIn;
         String url;
         String userEmail;
 
         UserService credentials = UserServiceFactory.getUserService();
         if(credentials.isUserLoggedIn()) {
-            loggedIn = true;
+            isLoggedIn = true;
             url = credentials.createLogoutURL("/homepage.html");
             userEmail = credentials.getCurrentUser().getEmail();
         } else {
-            loggedIn = false;
+            isLoggedIn = false;
             url = credentials.createLoginURL("/homepage.html");
             userEmail = "";
         }
 
-        LoginInfo userLogin = new LoginInfo(loggedIn, url, userEmail);
+        LoginInfo userLogin = new LoginInfo(isLoggedIn, url, userEmail);
         response.getWriter().println(gson.toJson(userLogin));
     }
 }

@@ -38,11 +38,11 @@ import javax.servlet.http.HttpServletResponse;
  *  either show or hide comments.
  */
 @WebServlet("/comments")
-public class DataServlet extends HttpServlet {
+public class CommentsServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
-    UserService credentials = UserServiceFactory.getUserService();
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private final UserService credentials = UserServiceFactory.getUserService();
+    private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

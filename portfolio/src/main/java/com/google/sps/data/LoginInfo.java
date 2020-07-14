@@ -16,18 +16,18 @@ package com.google.sps.data;
 
 /* Class to keep track of login information of a user. */
 public class LoginInfo {
-    private boolean loggedIn;
+    private boolean isLoggedIn;
     private String url;
     private String userEmail;
 
     public LoginInfo(boolean status, String url, String userEmail) {
-        this.loggedIn = status;
+        this.isLoggedIn = status;
         this.url = url;
         this.userEmail = userEmail;
     }
 
     public boolean isLoggedIn() {
-        return loggedIn;
+        return isLoggedIn;
     }
 
     public String getUrl() {
