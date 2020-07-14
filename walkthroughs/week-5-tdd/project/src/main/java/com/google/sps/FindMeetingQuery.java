@@ -31,7 +31,7 @@ public final class FindMeetingQuery {
                 if(occasion.getAttendees().contains(member)) {
                     end = occasion.getWhen().start();
                     if(end - start >= request.getDuration()) {
-                        workingTimes.add(new TimeRange(start, end - start));
+                        workingTimes.add(TimeRange.fromStartDuration(start, end - start));
                     }
                     // Change start if endpoint of another person is greater
                     if(occasion.getWhen().end() > start) {
@@ -43,7 +43,7 @@ public final class FindMeetingQuery {
         // Check possibilities using the end of the day
         end = END_OF_DAY;
         if(end - start >= request.getDuration()) {
-            workingTimes.add(new TimeRange(start, end - start));
+            workingTimes.add(TimeRange.fromStartDuration(start, end - start));
         }
         return workingTimes;
     }
