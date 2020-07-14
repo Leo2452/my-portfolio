@@ -18,23 +18,14 @@ import com.google.sps.data.LoginInfo;
 import com.google.gson.Gson;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that grabs a user's login status and dispatches
- *  to DataServlet to display its content according to the status.
+/** Servlet that grabs a user's login status along with their
+ *  link to login or logout and their email.
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -42,9 +33,8 @@ public class LoginServlet extends HttpServlet {
     private final Gson gson = new Gson();
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;");
-        PrintWriter out = response.getWriter();
         boolean loggedIn;
         String url;
         String userEmail;
@@ -61,8 +51,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         LoginInfo userLogin = new LoginInfo(loggedIn, url, userEmail);
-        request.setAttribute("userLogin", userLogin);
-        RequestDispatcher dispatch = request.getRequestDispatcher("/data");
-        dispatch.forward(request, response);
+        response.getWriter().println(gson.toJson(userLogin));
     }
 }

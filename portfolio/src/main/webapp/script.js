@@ -86,30 +86,32 @@ function questions() {
  */
 function updateComments() {
     var numCommentsString = document.getElementById("num-comments").value;
-    var numCommentsFloat = Number.parseFloat(numComments);
+    var numCommentsFloat = Number.parseFloat(numCommentsString);
     if(!Number.isInteger(numCommentsFloat) || numCommentsFloat < 1) {
         alert("Please enter a positive integer.");
         return;
     }
 
     document.getElementById("comment-history").innerText = "";
-    checkStatus();
+    getComments();
 }
 
 /** Displays the comments passed in as a parameter according to the number
  *  of comments the user wants displayed.
  */
-function getComments(comments) {
+function getComments() {
     var numComments = document.getElementById("num-comments");
     if(numComments === null) {
         return;
     }
-    const commentHistory = document.getElementById("comment-history");
-    for (i = 0; i < numComments.value; i++) {
-        if (comments.length > i) {
-            commentHistory.appendChild(createListElement(comments[i]));
+    fetch('/comments').then(response => response.json()).then(comments =>{
+        const commentHistory = document.getElementById("comment-history");
+        for (i = 0; i < numComments.value; i++) {
+            if (comments.length > i) {
+               commentHistory.appendChild(createListElement(comments[i]));
+            }
         }
-    }
+    })
 }
 
 /** Creates an <li> element containing text. */
@@ -122,32 +124,32 @@ function createListElement(fullComment) {
 
 /** Deletes all of the comment history inside the server's datastore. */
 function deleteComments() {
-    fetch("/delete-data");
+    fetch("/delete-comments");
 }
 
 /** Check if a user is logged in to show comments along with their status. */
 function checkStatus() {
-    fetch('/login').then(response => response.json()).then((access) => {
-        var changeStatus;
-        var container;
-        var commentDisplay = document.getElementById("commentDisplay");
-        if(access.userLogin.loggedIn == true) {
+    fetch('/login').then(response => response.json()).then((userLogin) => {
+        var welcomeBox = document.getElementById("welcome-box");
+        var commentDisplay = document.getElementById("comment-display");
+        if(userLogin.loggedIn == true) {
+            welcomeBox.innerText = "Welcome, " + userLogin.userEmail + "\n";
             changeStatus = "Logout";
             commentDisplay.style.display = "block";
-            getComments(access.commentHistory);
+            getComments();
         } else {
+            welcomeBox.innerText = "Welcome\n";
             changeStatus = "Login";
             commentDisplay.style.display = "none";
         }
-        container = document.getElementById("box");
-        showLoginStatus(changeStatus, access.userLogin.url, container);
+        showLoginStatus(changeStatus, userLogin.url, welcomeBox);
     });
 }
 
 /** Show option to log in or log out. */
 function showLoginStatus(changeStatus, url, container) {
     var logoutReference = createAElement(url);
-    container.innerText = changeStatus + " ";
+    container.innerText += changeStatus + " ";
     container.appendChild(logoutReference);
 }
 

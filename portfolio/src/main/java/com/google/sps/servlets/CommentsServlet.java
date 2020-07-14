@@ -14,9 +14,9 @@
 
 package com.google.sps.servlets;
 
-import com.google.sps.data.LoginInfo;
 import com.google.sps.data.Comment;
-import com.google.sps.data.Access;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -37,42 +37,39 @@ import javax.servlet.http.HttpServletResponse;
  *  Uses LoginServlet to determine if a user is logged in to
  *  either show or hide comments.
  */
-@WebServlet("/data")
+@WebServlet("/comments")
 public class DataServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
-    private String currentUserEmail;
+    UserService credentials = UserServiceFactory.getUserService();
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Query query = new Query("comment").addSort("date", SortDirection.DESCENDING);
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery results = datastore.prepare(query);
         response.setContentType("application/json;");
 
-        List<Comment> commentHistory = new ArrayList<>();
-        LoginInfo userLogin = (LoginInfo) request.getAttribute("userLogin");
-
-        // Display comments if logged in
-        if(userLogin.isLoggedIn()) {
+        if(!credentials.isUserLoggedIn()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            //Construct an array of comment history
+            List<Comment> commentHistory = new ArrayList<>();
             for (Entity entry: results.asIterable()) {
                 String content = (String) entry.getProperty("content");
                 Date date = (Date) entry.getProperty("date");
                 String email = (String) entry.getProperty("email");
-
                 commentHistory.add(new Comment(content, date, email));
             }
-            currentUserEmail = userLogin.getUserEmail();
+            response.getWriter().println(gson.toJson(commentHistory));
         }
-        Access access = new Access(commentHistory, userLogin);
-        response.getWriter().println(gson.toJson(access));
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String content = request.getParameter("input");
         Date date = new Date();
-        String email = currentUserEmail;
+        String email = credentials.getCurrentUser().getEmail();
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
@@ -80,7 +77,6 @@ public class DataServlet extends HttpServlet {
         entry.setProperty("content", content);
         entry.setProperty("email", email);
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(entry);
         response.sendRedirect("/homepage.html");
     }
