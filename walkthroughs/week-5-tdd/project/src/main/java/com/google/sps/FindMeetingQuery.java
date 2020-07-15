@@ -16,31 +16,41 @@ package com.google.sps;
 
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.List;
 
 public final class FindMeetingQuery {
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
         Collection<TimeRange> workingTimes = new ArrayList<TimeRange>();
         int start = TimeRange.START_OF_DAY;
         int end;
+        boolean foundGuest = false;
+
         for(Event occasion: events) {
-            for(String member: request.getAttendees()) {
+            for(String mandatoryGuest: request.getAttendees()) {
                 // Check possibilities before occupied event.
-                if(occasion.getAttendees().contains(member)) {
-                    end = occasion.getWhen().start();
-                    if(end - start >= request.getDuration()) {
-                        workingTimes.add(TimeRange.fromStartEnd(start, end, false));
-                    }
-                    // Change start if endpoint of another person is greater
-                    if(occasion.getWhen().end() > start) {
-                        start = occasion.getWhen().end();
-                    }
+                if(occasion.getAttendees().contains(mandatoryGuest)) {
+                    foundGuest = true;
+                    break;
                 }
             }
+            if(foundGuest) {
+                end = occasion.getWhen().start();
+                if(end - start >= request.getDuration()) {
+                    workingTimes.add(TimeRange.fromStartEnd(start, end, false));
+                }
+                // Change start if endpoint current person's occasion is greater
+                if(occasion.getWhen().end() > start) {
+                    start = occasion.getWhen().end();
+                }
+                foundGuest = false;
+            }
         }
-        // Check possibilities using the end of the day
-        end = TimeRange.END_OF_DAY;
-        if(end - start >= request.getDuration()) {
+        workingTimes = updateWithEndOfDay(workingTimes, start, request.getDuration());
+        return workingTimes;
+    }
+
+    public Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> workingTimes, int start, long meetingDuration) {
+        int end = TimeRange.END_OF_DAY;
+        if (end - start >= meetingDuration) {
             workingTimes.add(TimeRange.fromStartEnd(start, end, true));
         }
         return workingTimes;
