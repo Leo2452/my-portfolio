@@ -34,7 +34,7 @@ public final class FindMeetingQuery {
             }
             if(foundGuest) {
                 end = occasion.getWhen().start();
-                if(end - start >= request.getDuration()) {
+                if(meetingFits(request.getDuration(), start, end)) {
                     workingTimes.add(TimeRange.fromStartEnd(start, end, false));
                 }
                 // Change start if endpoint current person's occasion is greater
@@ -45,12 +45,92 @@ public final class FindMeetingQuery {
             }
         }
         workingTimes = updateWithEndOfDay(workingTimes, start, request.getDuration());
+        workingTimes = updateWithOptionalAttendees(workingTimes, events, request);
         return workingTimes;
     }
 
-    public Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> workingTimes, int start, long meetingDuration) {
+    /** Searches through the optional attendees and attempts to place them in time blocks
+     *  that work for mandatory attendees. Modifies the Collection of TimeRanges if so.
+    */
+    private Collection<TimeRange> updateWithOptionalAttendees(Collection<TimeRange> workingTimes, 
+                                                                Collection<Event> events, 
+                                                                MeetingRequest request) {
+        boolean foundGuest = false;
+        for(Event occasion: events) {
+            for(String guest: request.getOptionalAttendees()) {
+                if(occasion.getAttendees().contains(guest)) {
+                    foundGuest = true;
+                    break;
+                }
+            }
+            if(foundGuest) {
+                int start = occasion.getWhen().start();
+                int end = occasion.getWhen().end();
+                boolean isAtEndOfDay = (end == TimeRange.END_OF_DAY)? true: false;
+                TimeRange guestMeeting = TimeRange.fromStartEnd(start, end, isAtEndOfDay);
+                for(TimeRange currentTimeRange: workingTimes) {
+                    if(currentTimeRange.contains(guestMeeting)){
+                        workingTimes = splitTimeRange(workingTimes, currentTimeRange, 
+                                                        start, end, request.getDuration());
+                        break;
+                    }
+                }
+                foundGuest = true;
+            }
+        }
+        return workingTimes;
+    }
+
+    /** Handles the cases where a new time block may be open before or after the meeting. 
+     *  Determines if the current TimeRange should be removed and update workingTimes.
+     */
+    private Collection<TimeRange> splitTimeRange(Collection<TimeRange> workingTimes, 
+                                                TimeRange candidate, int start, 
+                                                int end, long duration) {
+        int newStartTime = candidate.start();
+        int newEndTime = candidate.end();
+        boolean remove = false;
+
+        // Check block of time before meeting
+        if(newStartTime != start && meetingFits(duration, newStartTime, start)) {
+            workingTimes.add(TimeRange.fromStartEnd(newStartTime, start, false));
+            remove = true;
+        }
+        
+        // Check block of time after meeting
+        if(newEndTime != end && meetingFits(duration, end, newEndTime)) {
+            workingTimes.add(TimeRange.fromStartEnd(end, newEndTime, false));
+            remove = true;
+        }
+
+        // Check block of time during meeting
+        if(squeezedIn(start, newStartTime, end, newEndTime)) {
+            remove = true;
+        }
+        if(meetingFits(duration, start, end)) {
+            remove = true;
+        }
+        if(remove) {
+            workingTimes.remove(candidate);
+        }
+        return workingTimes;
+    }
+
+    /** Determines if it completely covers the TimeRange block */
+    private boolean squeezedIn(int start, int newStartTime, int end, int newEndTime) {
+        return (newStartTime - start == 0 && newEndTime - end == 0);
+    }
+
+    /** Determines if the timeframe for a meeting fits the duration */
+    private boolean meetingFits(long duration, int start, int end) {
+        return (end - start) >= ((int) duration);
+    }
+
+    /** Tries to add a meeting using the end of the variable from TimeRange.java */
+    private Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> workingTimes, 
+                                                    int start, long duration) {
         int end = TimeRange.END_OF_DAY;
-        if (end - start >= meetingDuration) {
+        if (meetingFits(duration, start, end)) {
             workingTimes.add(TimeRange.fromStartEnd(start, end, true));
         }
         return workingTimes;
