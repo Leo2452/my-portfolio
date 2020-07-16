@@ -62,7 +62,9 @@ public class CommentsServlet extends HttpServlet {
                 String content = (String) entry.getProperty("content");
                 Date date = (Date) entry.getProperty("date");
                 String email = (String) entry.getProperty("email");
-                commentHistory.add(new Comment(content, date, email));
+                double score = (double) entry.getProperty("score");
+
+                commentHistory.add(new Comment(content, date, email, score));
             }
             response.getWriter().println(gson.toJson(commentHistory));
         }
@@ -75,7 +77,7 @@ public class CommentsServlet extends HttpServlet {
         String email = credentials.getCurrentUser().getEmail();
 
         Document doc =
-            Document.newBuilder().setContent(text).setType(Document.Type.PLAIN_TEXT).build();
+            Document.newBuilder().setContent(content).setType(Document.Type.PLAIN_TEXT).build();
         LanguageServiceClient languageService = LanguageServiceClient.create();
         Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
         double score = sentiment.getScore();
