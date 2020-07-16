@@ -36,40 +36,43 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/* Servlet that contains, saves and gets comments from database. */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
+/** Servlet that contains, saves and gets comments from database. 
+ *  Uses LoginServlet to determine if a user is logged in to
+ *  either show or hide comments.
+ */
+@WebServlet("/comments")
+public class CommentsServlet extends HttpServlet {
 
-    private List<String> comments = new ArrayList<>();
     private final Gson gson = new Gson();
+    private final UserService credentials = UserServiceFactory.getUserService();
+    private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query find = new Query("comment").addSort("date", SortDirection.DESCENDING);
-        DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery results = data.prepare(find);
-
-        //Construct an array of comment history
-        List<Comment> history = new ArrayList<>();
-        for (Entity entry: results.asIterable()) {
-            String curr = (String) entry.getProperty("text");
-            Date time = (Date) entry.getProperty("date");
-            String user = (String) entry.getProperty("email");
-            double score = (double) entry.getProperty("score");
-
-            history.add(new Comment(curr, time, user, score));
-        }
-
+        Query query = new Query("comment").addSort("date", SortDirection.DESCENDING);
+        PreparedQuery results = datastore.prepare(query);
         response.setContentType("application/json;");
-        response.getWriter().println(gson.toJson(history));
+
+        if(!credentials.isUserLoggedIn()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            //Construct an array of comment history
+            List<Comment> commentHistory = new ArrayList<>();
+            for (Entity entry: results.asIterable()) {
+                String content = (String) entry.getProperty("content");
+                Date date = (Date) entry.getProperty("date");
+                String email = (String) entry.getProperty("email");
+                commentHistory.add(new Comment(content, date, email));
+            }
+            response.getWriter().println(gson.toJson(commentHistory));
+        }
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String text = request.getParameter("input");
-        comments.add(text);
+        String content = request.getParameter("input");
         Date date = new Date();
-        UserService credentials = UserServiceFactory.getUserService();
+        String email = credentials.getCurrentUser().getEmail();
 
         Document doc =
             Document.newBuilder().setContent(text).setType(Document.Type.PLAIN_TEXT).build();
@@ -81,15 +84,11 @@ public class DataServlet extends HttpServlet {
         //Create Entity of entry
         Entity entry = new Entity("comment");
         entry.setProperty("date", date);
-        entry.setProperty("text", text);
-        entry.setProperty("email", credentials.getCurrentUser().getEmail());
+        entry.setProperty("content", content);
+        entry.setProperty("email", email);
         entry.setProperty("score", score);
 
-        //Put entry in datastore
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(entry);
-
-        //Redirect user to the homepage
         response.sendRedirect("/homepage.html");
     }
 }

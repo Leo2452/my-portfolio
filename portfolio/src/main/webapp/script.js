@@ -80,40 +80,47 @@ function questions() {
     }
 }
 
-/** Converts a string into a float and checks if it is an int. */
-function isInteger(input) {
-    return Number.isInteger(Number.parseFloat(input));
-}
-
-/**
- * Empties the current comment history and reloads it with a new 
- * number of comments to load from num-comments textbox.
+/** Checks for valid int number input. Empties the current 
+ *  comment history and reloads it with an updated number of comments.
  */
 function updateComments() {
-    var numComments = document.getElementById("num-comments").value;
-    if(numComments < 1 || !isInteger(numComments)) {
+    var numCommentsString = document.getElementById("num-comments").value;
+    var numCommentsFloat = Number.parseFloat(numCommentsString);
+    if(!Number.isInteger(numCommentsFloat) || numCommentsFloat < 1) {
         alert("Please enter a positive integer.");
         return;
     }
 
     document.getElementById("comment-history").innerText = "";
-    getComments();
+    gatherComments().then((comments) => updateHomepage(comments));
 }
 
-/** Fetches specified number of comments on webpage and displays a history of them. */
-function getComments() {
+/** Renders the amount of comments according to the user input. Creates
+ *  and returns a list element containing the comments requested.
+ */
+function renderComments(commentData) {
     var numComments = document.getElementById("num-comments");
     if(numComments === null) {
         return;
     }
-    fetch('/data').then(response => response.json()).then(comments =>{
-        const history = document.getElementById("comment-history");
-        for (i = 0; i < numComments.value; i++) {
-            if (comments.length > i) {
-               history.appendChild(createListElement(comments[i]));
-            }
+    const commentHistory = document.createElement("ul");
+    commentHistory.setAttribute('id', "comment-history");
+    for (i = 0; i < numComments.value; i++) {
+        if (commentData.length > i) {
+            commentHistory.appendChild(createListElement(commentData[i]));
         }
-    })
+    }
+    return commentHistory;
+}
+
+/** Loads comments and then renders them onscreen for user. */
+function gatherComments() {
+    return loadComments().then((commentData) => renderComments(commentData));
+}
+
+/** Calls CommentsServlet to fetch comment data, if authorized. */
+function loadComments() {
+    return fetch('/comments').then(response => response.json());
 }
 
 /** Creates an <li> element containing text. */
@@ -127,14 +134,61 @@ function createListElement(fullComment) {
 
 /** Deletes all of the comment history inside the server's datastore. */
 function deleteComments() {
-    fetch("/delete-data");
+    fetch("/delete-comments");
 }
 
-/** Check if user is logged in to display comments. */
+/** Shows comments onscreen with a div tag */
+function updateHomepage(comments) {
+    var commentArea = document.getElementById("comment-section");
+    commentArea.innerText = "";
+    commentArea.appendChild(comments);
+}
+
+/** Displays option for user to change login status. Gathers comments
+ *  or hides them according to login status. Updates onscreen information.
+ */
+function display() {
+    checkStatus().then((loginInfo) => {
+        renderLoginForms(loginInfo);
+        if(loginInfo.isLoggedIn) {
+            return gatherComments();
+        } else {
+            return document.createElement("blank");
+        }
+    }).then((comments) => updateHomepage(comments));
+}
+
+/** Hide or display comment section if user is logged in. Create login
+ *  forms to let user change login status.
+ */
+function renderLoginForms(loginInfo) {
+    var welcomeBox = document.getElementById("welcome-box");
+    if(!loginInfo.isLoggedIn) {
+        var commentDisplay = document.getElementById("comment-display");
+        commentDisplay.style.display = "none";
+        showLoginStatus("Login", loginInfo.url, welcomeBox);
+    } else {
+        welcomeBox.innerTest = "Welcome, " + loginInfo.userEmail + "\n";
+        showLoginStatus("Logout", loginInfo.url, welcomeBox);
+    }
+}
+
+/** Check if a user is logged in to show comments along with their status. */
 function checkStatus() {
-    var commentSection = document.getElementById("box");
-    fetch('/login').then(response => response.text()).then(comments => {
-        commentSection.innerHTML = comments;
-        getComments();
-    });
+    return fetch('/login').then(response => response.json());
+}
+
+/** Show option to log in or log out. */
+function showLoginStatus(changeStatus, url, container) {
+    var logoutReference = createAElement(url);
+    container.innerText += changeStatus + " ";
+    container.appendChild(logoutReference);
+}
+
+/** Creates an <a> element containing text. */
+function createAElement(url) {
+  const aElement = document.createElement('a');
+  aElement.setAttribute('href', url);
+  aElement.innerText = "here";
+  return aElement;
 }

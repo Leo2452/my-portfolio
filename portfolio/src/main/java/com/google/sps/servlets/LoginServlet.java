@@ -14,56 +14,43 @@
 
 package com.google.sps.servlets;
 
+import com.google.sps.data.LoginInfo;
+import com.google.gson.Gson;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that checks if user is logged in to display appropriate content */
+/** Servlet that grabs a user's login status along with their
+ *  link to login or logout and their email.
+ */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
+    private final Gson gson = new Gson();
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html;");
-        PrintWriter out = response.getWriter();
+        response.setContentType("application/json;");
+        boolean isLoggedIn;
+        String url;
+        String userEmail;
 
         UserService credentials = UserServiceFactory.getUserService();
         if(credentials.isUserLoggedIn()) {
-            outputComments(out, credentials);
+            isLoggedIn = true;
+            url = credentials.createLogoutURL("/homepage.html");
+            userEmail = credentials.getCurrentUser().getEmail();
         } else {
-            String loginUrl = credentials.createLoginURL("/homepage.html");
-            out.println("<p>Please login <a href=\"" + loginUrl + "\">here.</a></p>");
+            isLoggedIn = false;
+            url = credentials.createLoginURL("/homepage.html");
+            userEmail = "";
         }
-    }
 
-    /** Produces the comment section. */
-    private void outputComments(PrintWriter out, UserService credentials) {
-        String logoutUrl = credentials.createLogoutURL("/homepage.html");
-        out.println("<p>Welcome back, " + credentials.getCurrentUser().getEmail() + ".</p>");
-
-        out.println("<form action=\"/data\" method=\"POST\">");
-        out.println("<ul id=\"comment-history\"></ul><br>");
-        out.println("<input name=\"input\" placeholder=\"Leave a comment\"><br>");
-        out.println("<input type=\"submit\">");
-        out.println("</form>");
-        out.println("<p>Number of comments to display:</p>");
-        out.println("<input type=\"number\" name=\"num-comments\" id=\"num-comments\""
-                    + "min=\"1\" value=\"10\" onchange=\"updateComments()\"><br><br>");
-        out.println("<form action=\"/delete-data\" method=POST>");
-        out.println("<button onclick=\"deleteComments()\">Delete Comments</button>");
-        out.println("</form>");
-
-        out.println("<p>Logout <a href=\"" + logoutUrl + "\">here.</p>");
+        LoginInfo userLogin = new LoginInfo(isLoggedIn, url, userEmail);
+        response.getWriter().println(gson.toJson(userLogin));
     }
 }
