@@ -46,6 +46,7 @@ public class CommentsServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final UserService credentials = UserServiceFactory.getUserService();
     private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private final LanguageServiceClient languageService = LanguageServiceClient.create();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -78,10 +79,8 @@ public class CommentsServlet extends HttpServlet {
 
         Document doc =
             Document.newBuilder().setContent(content).setType(Document.Type.PLAIN_TEXT).build();
-        LanguageServiceClient languageService = LanguageServiceClient.create();
         Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
         double score = sentiment.getScore();
-        languageService.close();
 
         //Create Entity of entry
         Entity entry = new Entity("comment");
@@ -92,5 +91,10 @@ public class CommentsServlet extends HttpServlet {
 
         datastore.put(entry);
         response.sendRedirect("/homepage.html");
+    }
+
+    @Override
+    public void destroy() {
+        languageService.close();
     }
 }
