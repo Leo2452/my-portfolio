@@ -6,25 +6,28 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="getComments()">
+  <body onload="display()">
     <div id="content">
       <h1>Leo's Portfolio</h1>
       <p>Click here to get a random greeting:</p>
       <button onclick="addRandomGreeting()">Hello</button>
       <div id="greeting-container"></div>
-      <p>click here to get a personalized greeting:</p>
+      <p>Enter your name here to get a personalized greeting:</p>
       <div id="special-greeting-container"></div><br>
+      <div id="welcome-box"></div>
       <input id="name-input" name="name-input" type="text" placeholder="What's your name?" onchange="addSpecialGreeting()">
-	  <form action="/data" method="POST">
-	    <ul id="comment-history"></ul><br>
-		<input name="input" placeholder="Leave a comment"><br>
-		<input type="submit">
-	  </form>
-      <p>Number of comments to display:</p>
-      <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()"><br><br>
-      <form action="/delete-data" method=POST>
-        <button onclick="deleteComments()">Delete Comments</button>
-      </form>
+      <div id="comment-display">
+        <form action="/comments" method="POST">
+	      <div id="comment-section"></div><br>
+		  <input name="input" placeholder="Leave a comment"><br>
+		  <input type="submit">
+	    </form>
+        <p>Number of comments to display:</p>
+        <input type="number" name="num-comments" id="num-comments" min="1" value="10" onchange="updateComments()"><br><br>
+        <form action="/delete-comments" method=POST>
+          <button onclick="deleteComments()">Delete Comments</button>
+        </form>
+      </div>
       <p>My full name is Leobardo but I usually go by Leo. I'm 20 years old
           and I'm from Phoenix, Arizona. I'm the oldest of three, with two
           younger sisters. I'm a first generation college student studying
@@ -35,18 +38,17 @@
       <h1 style="text-align:center"> Learn more about me below</h1>
       <img src="/images/me1.JPG" alt="Me smirking" width="450" height="600">
       <div style="text-align: center">
-          <p>Click <a href="/interests.html">here</a> to see some of my interests</p>
-          <p>Click <a href="/pets.html">here</a> to see pictures of my pets</p>
-          <p>Learn a random fact about me below:</p>
-          <button onclick="addRandomFact()">Learn more</button>
-          <div id="fact-container"></div>
+        <p>Click <a href="/interests.html">here</a> to see some of my interests</p>
+        <p>Click <a href="/pets.html">here</a> to see pictures of my pets</p>
+        <p>Learn a random fact about me below:</p>
+        <button onclick="addRandomFact()">Learn more</button>
+        <div id="fact-container"></div>
       </div>
       <div id="footer">
-          <h3>Ways to Connect:</h3>
-          <a href="http://www.linkedin.com/in/leobardo">Linkedin</a>
-          <a href="http://www.github.com/leo2452">GitHub</a>
+        <h3>Ways to Connect:</h3>
+        <a href="http://www.linkedin.com/in/leobardo">Linkedin</a>
+        <a href="http://www.github.com/leo2452">GitHub</a>
       </div>
-    </div>
     </div>
   </body>
 </html>

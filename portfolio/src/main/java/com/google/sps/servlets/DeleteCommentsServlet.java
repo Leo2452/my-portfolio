@@ -15,12 +15,10 @@
 package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.KeyRange;
-
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -31,18 +29,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /* Servlet used to delete comments from datastore. */
-@WebServlet("/delete-data")
-public class DeleteDataServlet extends HttpServlet {
+@WebServlet("/delete-comments")
+public class DeleteCommentsServlet extends HttpServlet {
+
+    private final DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+    UserService credentials = UserServiceFactory.getUserService();
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query find = new Query("comment").addSort("timestamp", SortDirection.DESCENDING);
-        DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+        Query find = new Query("comment");
         PreparedQuery results = data.prepare(find);
 
-        //Delete all comments found
-        for (Entity entry: results.asIterable()) {
-            data.delete(entry.getKey());
+        //Delete all comments found if user is logged in
+        if(credentials.isUserLoggedIn()) {
+            for (Entity entry: results.asIterable()) {
+                data.delete(entry.getKey());
+            }
         }
         
         response.sendRedirect("/homepage.html");
