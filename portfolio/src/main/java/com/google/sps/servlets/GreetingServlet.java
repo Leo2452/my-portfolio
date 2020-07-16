@@ -42,6 +42,6 @@ public class GreetingServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String greeting = greetings.get((int) (Math.random() * greetings.size()));
         response.setContentType("text/html;");
-        response.getWriter().println(greeting);
+        response.getWriter().print(greeting);
     }
 }
