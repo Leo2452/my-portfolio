@@ -46,6 +46,7 @@ public class CommentsServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final UserService credentials = UserServiceFactory.getUserService();
     private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    // How to try/catch JavaIOException as a private final variable
     private final LanguageServiceClient languageService = LanguageServiceClient.create();
 
     @Override
