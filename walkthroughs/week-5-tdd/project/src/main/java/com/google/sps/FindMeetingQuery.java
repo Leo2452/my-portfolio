@@ -32,15 +32,7 @@ public final class FindMeetingQuery {
         MEETING_DURATION = request.getDuration();
 
         for(Event occasion: events) {
-            boolean foundGuest = false;
-            for(String mandatoryGuest: request.getAttendees()) {
-                // Check possibilities before occupied event.
-                if(occasion.getAttendees().contains(mandatoryGuest)) {
-                    foundGuest = true;
-                    break;
-                }
-            }
-            if(foundGuest) {
+            if(foundGuest(occasion, request, true)) {
                 int end = occasion.getWhen().start();
                 if(meetingFits(start, end)) {
                     schedule.add(TimeRange.fromStartEnd(start, end, false));
@@ -64,14 +56,7 @@ public final class FindMeetingQuery {
                                                                 Collection<Event> events, 
                                                                 MeetingRequest request) {
         for(Event occasion: events) {
-            boolean foundGuest = false;
-            for(String guest: request.getOptionalAttendees()) {
-                if(occasion.getAttendees().contains(guest)) {
-                    foundGuest = true;
-                    break;
-                }
-            }
-            if(foundGuest) {
+            if(foundGuest(occasion, request, false)) {
                 int start = occasion.getWhen().start();
                 int end = occasion.getWhen().end();
                 boolean isAtEndOfDay = (end == TimeRange.END_OF_DAY)? true: false;
@@ -86,6 +71,21 @@ public final class FindMeetingQuery {
             }
         }
         return schedule;
+    }
+
+    /** Looks for any one guest being unavailable during a given occasion.
+     *  Iterates over specified guest type (mandatory or optional).
+     */
+    private boolean foundGuest(Event occasion, MeetingRequest request, boolean mandatory) {
+        Collection<String> guestType = (mandatory)? request.getAttendees():
+                                         request.getOptionalAttendees();
+
+        for(String guest: guestType) {
+            if(occasion.getAttendees().contains(guest)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Handles the cases where a new time block may be open before or after the meeting. 
