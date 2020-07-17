@@ -18,6 +18,9 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 public final class FindMeetingQuery {
+
+    private boolean containsMandatoryAttendees = false;
+
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
         Collection<TimeRange> schedule = new ArrayList<TimeRange>();
         int start = TimeRange.START_OF_DAY;
@@ -36,6 +39,7 @@ public final class FindMeetingQuery {
                 end = occasion.getWhen().start();
                 if(meetingFits(request.getDuration(), start, end)) {
                     schedule.add(TimeRange.fromStartEnd(start, end, false));
+                    containsMandatoryAttendees = true;
                 }
                 // Change start if endpoint current person's occasion is greater
                 if(occasion.getWhen().end() > start) {
@@ -103,16 +107,23 @@ public final class FindMeetingQuery {
         }
 
         // Check block of time during meeting
-        if(isSqueezedIn(start, newStartTime, end, newEndTime)) {
+        if(isSqueezedIn(start, newStartTime, end, newEndTime) 
+            || !meetingFits(duration, newStartTime, start)) {
             canRemove = true;
         }
-        if(meetingFits(duration, start, end)) {
-            canRemove = true;
-        }
-        if(canRemove) {
+        if(canRemove && isWorkable(schedule)) {
             schedule.remove(candidate);
         }
         return schedule;
+    }
+
+    /** Determines if the schedule works for everyone under guidelines:
+     *  - Mandatory attendees require at least one TimeRange
+     *  - All optional guests have to be accounted for, meaning they
+     *    all shift the schedule and must keep 1+ TimeRange
+     */
+    private boolean isWorkable(Collection<TimeRange> schedule) {
+        return schedule.size() > 1 || !containsMandatoryAttendees;
     }
 
     /** Determines if it completely covers the TimeRange block */
