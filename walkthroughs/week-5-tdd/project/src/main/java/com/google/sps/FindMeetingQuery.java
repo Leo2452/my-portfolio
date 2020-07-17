@@ -32,7 +32,6 @@ public final class FindMeetingQuery {
         MEETING_DURATION = request.getDuration();
 
         for(Event occasion: events) {
-            int end;
             boolean foundGuest = false;
             for(String mandatoryGuest: request.getAttendees()) {
                 // Check possibilities before occupied event.
@@ -42,7 +41,7 @@ public final class FindMeetingQuery {
                 }
             }
             if(foundGuest) {
-                end = occasion.getWhen().start();
+                int end = occasion.getWhen().start();
                 if(meetingFits(start, end)) {
                     schedule.add(TimeRange.fromStartEnd(start, end, false));
                     containsMandatoryAttendees = true;
