@@ -53,7 +53,7 @@ public final class FindMeetingQuery {
                 }
             }
         }
-        schedule = updateWithEndOfDay(schedule, start, MEETING_DURATION);
+        schedule = updateWithEndOfDay(schedule, start);
         schedule = updateWithOptionalAttendees(schedule, events, request);
         return schedule;
     }
@@ -80,7 +80,7 @@ public final class FindMeetingQuery {
                 for(TimeRange currentTimeRange: schedule) {
                     if(currentTimeRange.contains(guestMeeting)){
                         schedule = splitTimeRange(schedule, currentTimeRange,
-                                                    start, end, request.getDuration());
+                                                    start, end);
                         break;
                     }
                 }
@@ -94,7 +94,7 @@ public final class FindMeetingQuery {
      */
     private Collection<TimeRange> splitTimeRange(Collection<TimeRange> schedule,
                                                 TimeRange candidate, int start, 
-                                                int end, long duration) {
+                                                int end) {
         int newStartTime = candidate.start();
         int newEndTime = candidate.end();
         boolean canRemove = false;
@@ -147,7 +147,7 @@ public final class FindMeetingQuery {
 
     /** Tries to add a meeting using the end of the variable from TimeRange.java */
     private Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> schedule,
-                                                    int start, long duration) {
+                                                    int start) {
         int end = TimeRange.END_OF_DAY;
         if (meetingFits(start, end)) {
             schedule.add(TimeRange.fromStartEnd(start, end, true));
