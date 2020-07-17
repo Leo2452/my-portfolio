@@ -19,12 +19,12 @@ import java.util.ArrayList;
 
 public final class FindMeetingQuery {
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-        Collection<TimeRange> workingTimes = new ArrayList<TimeRange>();
+        Collection<TimeRange> schedule = new ArrayList<TimeRange>();
         int start = TimeRange.START_OF_DAY;
-        int end;
-        boolean foundGuest = false;
 
         for(Event occasion: events) {
+            int end;
+            boolean foundGuest = false;
             for(String mandatoryGuest: request.getAttendees()) {
                 // Check possibilities before occupied event.
                 if(occasion.getAttendees().contains(mandatoryGuest)) {
@@ -35,24 +35,23 @@ public final class FindMeetingQuery {
             if(foundGuest) {
                 end = occasion.getWhen().start();
                 if(meetingFits(request.getDuration(), start, end)) {
-                    workingTimes.add(TimeRange.fromStartEnd(start, end, false));
+                    schedule.add(TimeRange.fromStartEnd(start, end, false));
                 }
                 // Change start if endpoint current person's occasion is greater
                 if(occasion.getWhen().end() > start) {
                     start = occasion.getWhen().end();
                 }
-                foundGuest = false;
             }
         }
-        workingTimes = updateWithEndOfDay(workingTimes, start, request.getDuration());
-        workingTimes = updateWithOptionalAttendees(workingTimes, events, request);
-        return workingTimes;
+        schedule = updateWithEndOfDay(schedule, start, request.getDuration());
+        schedule = updateWithOptionalAttendees(schedule, events, request);
+        return schedule;
     }
 
     /** Searches through the optional attendees and attempts to place them in time blocks
      *  that work for mandatory attendees. Modifies the Collection of TimeRanges if so.
     */
-    private Collection<TimeRange> updateWithOptionalAttendees(Collection<TimeRange> workingTimes, 
+    private Collection<TimeRange> updateWithOptionalAttendees(Collection<TimeRange> schedule,
                                                                 Collection<Event> events, 
                                                                 MeetingRequest request) {
         boolean foundGuest = false;
@@ -68,56 +67,56 @@ public final class FindMeetingQuery {
                 int end = occasion.getWhen().end();
                 boolean isAtEndOfDay = (end == TimeRange.END_OF_DAY)? true: false;
                 TimeRange guestMeeting = TimeRange.fromStartEnd(start, end, isAtEndOfDay);
-                for(TimeRange currentTimeRange: workingTimes) {
+                for(TimeRange currentTimeRange: schedule) {
                     if(currentTimeRange.contains(guestMeeting)){
-                        workingTimes = splitTimeRange(workingTimes, currentTimeRange, 
-                                                        start, end, request.getDuration());
+                        schedule = splitTimeRange(schedule, currentTimeRange,
+                                                    start, end, request.getDuration());
                         break;
                     }
                 }
                 foundGuest = true;
             }
         }
-        return workingTimes;
+        return schedule;
     }
 
     /** Handles the cases where a new time block may be open before or after the meeting. 
-     *  Determines if the current TimeRange should be removed and update workingTimes.
+     *  Determines if the current TimeRange should be removed and updates schedule.
      */
-    private Collection<TimeRange> splitTimeRange(Collection<TimeRange> workingTimes, 
+    private Collection<TimeRange> splitTimeRange(Collection<TimeRange> schedule,
                                                 TimeRange candidate, int start, 
                                                 int end, long duration) {
         int newStartTime = candidate.start();
         int newEndTime = candidate.end();
-        boolean remove = false;
+        boolean canRemove = false;
 
         // Check block of time before meeting
-        if(newStartTime != start && meetingFits(duration, newStartTime, start)) {
-            workingTimes.add(TimeRange.fromStartEnd(newStartTime, start, false));
-            remove = true;
+        if(meetingFits(duration, newStartTime, start)) {
+            schedule.add(TimeRange.fromStartEnd(newStartTime, start, false));
+            canRemove = true;
         }
         
         // Check block of time after meeting
-        if(newEndTime != end && meetingFits(duration, end, newEndTime)) {
-            workingTimes.add(TimeRange.fromStartEnd(end, newEndTime, false));
-            remove = true;
+        if(meetingFits(duration, end, newEndTime)) {
+            schedule.add(TimeRange.fromStartEnd(end, newEndTime, false));
+            canRemove = true;
         }
 
         // Check block of time during meeting
-        if(squeezedIn(start, newStartTime, end, newEndTime)) {
-            remove = true;
+        if(isSqueezedIn(start, newStartTime, end, newEndTime)) {
+            canRemove = true;
         }
         if(meetingFits(duration, start, end)) {
-            remove = true;
+            canRemove = true;
         }
-        if(remove) {
-            workingTimes.remove(candidate);
+        if(canRemove) {
+            schedule.remove(candidate);
         }
-        return workingTimes;
+        return schedule;
     }
 
     /** Determines if it completely covers the TimeRange block */
-    private boolean squeezedIn(int start, int newStartTime, int end, int newEndTime) {
+    private boolean isSqueezedIn(int start, int newStartTime, int end, int newEndTime) {
         return (newStartTime - start == 0 && newEndTime - end == 0);
     }
 
@@ -127,12 +126,12 @@ public final class FindMeetingQuery {
     }
 
     /** Tries to add a meeting using the end of the variable from TimeRange.java */
-    private Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> workingTimes, 
+    private Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> schedule,
                                                     int start, long duration) {
         int end = TimeRange.END_OF_DAY;
         if (meetingFits(duration, start, end)) {
-            workingTimes.add(TimeRange.fromStartEnd(start, end, true));
+            schedule.add(TimeRange.fromStartEnd(start, end, true));
         }
-        return workingTimes;
+        return schedule;
     }
 }
