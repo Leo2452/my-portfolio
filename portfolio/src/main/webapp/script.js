@@ -126,8 +126,9 @@ function loadComments() {
 /** Creates an <li> element containing text. */
 function createListElement(fullComment) {
   const liElement = document.createElement('li');
-  liElement.innerText = fullComment.content + "\n" + "Submitted on " 
-                        + fullComment.date + " by " + fullComment.email + "\n\n";
+  liElement.innerText = fullComment.content + "\nSentiment Score: "
+                        + fullComment.score + "\n Submitted on " + fullComment.date
+                        + " by " + fullComment.email + "\n\n";
   return liElement;
 }
 

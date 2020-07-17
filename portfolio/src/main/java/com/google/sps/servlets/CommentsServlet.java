@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
 import com.google.sps.data.Comment;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -43,6 +46,7 @@ public class CommentsServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final UserService credentials = UserServiceFactory.getUserService();
     private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    private final LanguageServiceClient languageService = LanguageServiceClient.create();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -59,7 +63,9 @@ public class CommentsServlet extends HttpServlet {
                 String content = (String) entry.getProperty("content");
                 Date date = (Date) entry.getProperty("date");
                 String email = (String) entry.getProperty("email");
-                commentHistory.add(new Comment(content, date, email));
+                double score = (double) entry.getProperty("score");
+
+                commentHistory.add(new Comment(content, date, email, score));
             }
             response.getWriter().println(gson.toJson(commentHistory));
         }
@@ -71,13 +77,24 @@ public class CommentsServlet extends HttpServlet {
         Date date = new Date();
         String email = credentials.getCurrentUser().getEmail();
 
+        Document doc =
+            Document.newBuilder().setContent(content).setType(Document.Type.PLAIN_TEXT).build();
+        Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
+        double score = sentiment.getScore();
+
         //Create Entity of entry
         Entity entry = new Entity("comment");
         entry.setProperty("date", date);
         entry.setProperty("content", content);
         entry.setProperty("email", email);
+        entry.setProperty("score", score);
 
         datastore.put(entry);
         response.sendRedirect("/homepage.html");
+    }
+
+    @Override
+    public void destroy() {
+        languageService.close();
     }
 }

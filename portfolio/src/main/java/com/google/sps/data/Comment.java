@@ -22,11 +22,13 @@ public final class Comment {
   private final String content;
   private final Date date;
   private final String email;
+  private final double score;
 
-  public Comment(String content, Date date, String email) {
+  public Comment(String content, Date date, String email, double score) {
       this.content = content;
       this.date = date;
       this.email = email;
+      this.score = score;
   }
 
   public String getContent() {
@@ -39,5 +41,9 @@ public final class Comment {
 
   public String getUser() {
     return email;
+  }
+
+  public double getScore() {
+      return score;
   }
 }
