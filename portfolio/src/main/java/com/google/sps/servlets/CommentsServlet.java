@@ -46,7 +46,17 @@ public class CommentsServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final UserService credentials = UserServiceFactory.getUserService();
     private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    private final LanguageServiceClient languageService = LanguageServiceClient.create();
+    private LanguageServiceClient languageService;
+
+    @Override
+    public void init() {
+        try {
+            languageService = LanguageServiceClient.create();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            System.out.println("Could not access.");
+        }
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
