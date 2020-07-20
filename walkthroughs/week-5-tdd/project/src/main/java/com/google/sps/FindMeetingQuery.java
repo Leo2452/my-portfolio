@@ -19,9 +19,6 @@ import java.util.ArrayList;
 
 public final class FindMeetingQuery {
 
-    private boolean containsMandatoryAttendees = false;
-    private long MEETING_DURATION;
-
     /** Create a working schedule of meetings with TimeRanges. Prioritize
      *  mandatory attendees over optional guests, who can attend if at
      *  least one TimeRange works for mandatory attendees.
@@ -29,12 +26,13 @@ public final class FindMeetingQuery {
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
         Collection<TimeRange> schedule = new ArrayList<TimeRange>();
         int start = TimeRange.START_OF_DAY;
-        MEETING_DURATION = request.getDuration();
+        long duration = request.getDuration();
+        boolean containsMandatoryAttendees = false;
 
         for(Event occasion: events) {
             if(foundGuest(occasion, request, true)) {
                 int end = occasion.getWhen().start();
-                if(meetingFits(start, end)) {
+                if(meetingFits(duration, start, end)) {
                     schedule.add(TimeRange.fromStartEnd(start, end, false));
                     containsMandatoryAttendees = true;
                 }
@@ -44,8 +42,9 @@ public final class FindMeetingQuery {
                 }
             }
         }
-        schedule = updateWithEndOfDay(schedule, start);
-        schedule = updateWithOptionalAttendees(schedule, events, request);
+        schedule = updateWithEndOfDay(schedule, start, duration);
+        schedule = updateWithOptionalAttendees(schedule, events,
+                                                request, containsMandatoryAttendees);
         return schedule;
     }
 
@@ -54,17 +53,19 @@ public final class FindMeetingQuery {
     */
     private Collection<TimeRange> updateWithOptionalAttendees(Collection<TimeRange> schedule,
                                                                 Collection<Event> events, 
-                                                                MeetingRequest request) {
+                                                                MeetingRequest request,
+                                                                boolean containsMandatoryAttendees) {
         for(Event occasion: events) {
             if(foundGuest(occasion, request, false)) {
                 int start = occasion.getWhen().start();
                 int end = occasion.getWhen().end();
+                long duration = request.getDuration();
                 boolean isAtEndOfDay = (end == TimeRange.END_OF_DAY)? true: false;
                 TimeRange guestMeeting = TimeRange.fromStartEnd(start, end, isAtEndOfDay);
                 for(TimeRange currentTimeRange: schedule) {
                     if(currentTimeRange.contains(guestMeeting)){
-                        schedule = splitTimeRange(schedule, currentTimeRange,
-                                                    start, end);
+                        schedule = splitTimeRange(schedule, currentTimeRange, start, end,
+                                                    duration, containsMandatoryAttendees);
                         break;
                     }
                 }
@@ -93,29 +94,30 @@ public final class FindMeetingQuery {
      */
     private Collection<TimeRange> splitTimeRange(Collection<TimeRange> schedule,
                                                 TimeRange candidate, int start, 
-                                                int end) {
+                                                int end, long duration,
+                                                boolean containsMandatoryAttendees) {
         int newStartTime = candidate.start();
         int newEndTime = candidate.end();
         boolean canRemove = false;
 
         // Check block of time before meeting
-        if(meetingFits(newStartTime, start)) {
+        if(meetingFits(duration, newStartTime, start)) {
             schedule.add(TimeRange.fromStartEnd(newStartTime, start, false));
             canRemove = true;
         }
         
         // Check block of time after meeting
-        if(meetingFits(end, newEndTime)) {
+        if(meetingFits(duration, end, newEndTime)) {
             schedule.add(TimeRange.fromStartEnd(end, newEndTime, false));
             canRemove = true;
         }
 
         // Check block of time during meeting
         if(isSqueezedIn(start, newStartTime, end, newEndTime) 
-            || !meetingFits(newStartTime, start)) {
+            || !meetingFits(duration, newStartTime, start)) {
             canRemove = true;
         }
-        if(canRemove && isWorkable(schedule)) {
+        if(canRemove && isWorkable(schedule, containsMandatoryAttendees)) {
             schedule.remove(candidate);
         }
         return schedule;
@@ -126,17 +128,14 @@ public final class FindMeetingQuery {
      *  - All optional guests have to be accounted for, meaning they
      *    all shift the schedule and must keep 1+ TimeRange
      */
-    private boolean isWorkable(Collection<TimeRange> schedule) {
+    private boolean isWorkable(Collection<TimeRange> schedule, 
+                                boolean containsMandatoryAttendees) {
         return schedule.size() > 1 || !containsMandatoryAttendees;
     }
 
     /** Determines if it completely covers the TimeRange block */
     private boolean isSqueezedIn(int start, int newStartTime, int end, int newEndTime) {
         return (newStartTime - start == 0 && newEndTime - end == 0);
-    }
-
-    private boolean meetingFits(int start, int end) {
-        return meetingFits(MEETING_DURATION, start, end);
     }
 
     /** Determines if the timeframe for a meeting fits the duration */
@@ -146,9 +145,9 @@ public final class FindMeetingQuery {
 
     /** Tries to add a meeting using the end of the variable from TimeRange.java */
     private Collection<TimeRange> updateWithEndOfDay(Collection<TimeRange> schedule,
-                                                    int start) {
+                                                    int start, long duration) {
         int end = TimeRange.END_OF_DAY;
-        if (meetingFits(start, end)) {
+        if (meetingFits(duration, start, end)) {
             schedule.add(TimeRange.fromStartEnd(start, end, true));
         }
         return schedule;
