@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.io.IOException;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,12 +50,11 @@ public class CommentsServlet extends HttpServlet {
     private LanguageServiceClient languageService;
 
     @Override
-    public void init() {
+    public void init() throws ServletException{
         try {
             languageService = LanguageServiceClient.create();
         } catch (IOException e) {
-            System.out.println(e.toString());
-            System.out.println("Could not access.");
+            throw new ServletException("Unable to create LanguageServiceClient ", e);
         }
     }
 
