@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.io.IOException;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,16 @@ public class CommentsServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final UserService credentials = UserServiceFactory.getUserService();
     private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    private final LanguageServiceClient languageService = LanguageServiceClient.create();
+    private LanguageServiceClient languageService;
+
+    @Override
+    public void init() throws ServletException{
+        try {
+            languageService = LanguageServiceClient.create();
+        } catch (IOException e) {
+            throw new ServletException("Unable to create LanguageServiceClient ", e);
+        }
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
